@@ -1,9 +1,9 @@
 // app.js - UI logic with localStorage + Firestore attempts
 // Replace firebaseConfig with your project values
 const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME",
-  projectId: "REPLACE_ME"
+  apiKey: "AIzaSyCZ_eQonlY2OxSyJt55Efjr8TH1BYGIQ-Q",
+  authDomain: "house-expense-a4c13.firebaseapp.com",
+  projectId: "house-expense-a4c13"
 };
 
 let db = null;
