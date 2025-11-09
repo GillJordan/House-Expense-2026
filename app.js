@@ -2,9 +2,9 @@
 /* IMPORTANT: Replace firebaseConfig below with your project's config from Firebase console. */
 
 const firebaseConfig = {
-  apiKey: "REPLACE_API_KEY",
-  authDomain: "REPLACE_AUTH_DOMAIN",
-  projectId: "REPLACE_PROJECT_ID",
+  apiKey: "AIzaSyCZ_eQonlY2OxSyJt55Efjr8TH1BYGIQ-Q",
+  authDomain: "house-expense-a4c13.firebaseapp.com",
+  projectId: "house-expense-a4c13",
   // optional fields below
   // storageBucket: "YOUR_BUCKET",
   // messagingSenderId: "XXX",
