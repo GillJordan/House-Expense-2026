@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Home Finance — Neumorphic UI v3</title>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">HF</div><div><h1>Home Finance Dashboard</h1><div class="sub">Neumorphic UI v3</div></div></div>
+      <div class="right">Logged: Single user</div>
+    </header>
+
+    <main class="container">
+
+      <section class="cards-row">
+        <div class="card small"><div class="muted">Total Saving</div><div class="value" id="totalSaving">₹0</div></div>
+        <div class="card small"><div class="muted">Total Expense</div><div class="value" id="totalExpense">₹0</div></div>
+        <div class="card small"><div class="muted">Trading Amount</div><div class="value" id="totalTrading">₹0</div></div>
+        <div class="card small"><div class="muted">Long Term Investment</div><div class="value" id="totalLong">₹0</div></div>
+        <div class="card small"><div class="muted">Pending Udhaar</div><div class="value" id="totalPending">₹0</div></div>
+      </section>
+
+      <div class="actions-row">
+        <button id="openAddEntry" class="btn primary">+ Add Entry</button>
+      </div>
+
+      <section class="layout">
+        <div class="main-col">
+          <div class="panel charts card" id="chartsArea">
+            <div class="panel-title">Charts area (demo)</div>
+            <div class="charts-grid">
+              <canvas id="pieChart" width="400" height="300"></canvas>
+              <canvas id="barChart" width="400" height="300"></canvas>
+            </div>
+          </div>
+
+          <div class="panel card" id="recentPanel">
+            <div class="panel-title">Recent Entries</div>
+            <table class="tx-table">
+              <thead><tr><th>Date</th><th>Type</th><th>Account</th><th>Product</th><th>Amount</th></tr></thead>
+              <tbody id="txBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="side-col">
+          <div class="panel card">
+            <div class="panel-title">Accounts Summary <button id="addAccountBtn" class="btn tiny">+ Add</button></div>
+            <div id="accountsList"></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add Entry Modal -->
+  <div id="modalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal card modal-large" id="entryModal">
+      <div class="modal-header">
+        <h3><span class="accent">Add</span> Entry</h3>
+        <button id="closeModal" class="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="entryForm" class="grid-form">
+          <label> Date <input type="date" id="entryDate" /></label>
+          <label> Type
+            <select id="entryType">
+              <option value="credit">Credit</option>
+              <option value="debit">Debit</option>
+            </select>
+          </label>
+
+          <div class="account-row">
+            <label> Account
+              <select id="entryAccount"><option value="">No accounts - create one (+)</option></select>
+            </label>
+            <button type="button" id="accountPlus" class="btn tiny">+</button>
+          </div>
+
+          <label> Amount (₹) <input id="entryAmount" type="number" /></label>
+          <label> Product <input id="entryProduct" placeholder="Product / Category" /></label>
+          <label> Quantity <input id="entryQty" placeholder="Qty" /></label>
+          <label> For <input id="entryFor" placeholder="For whom" /></label>
+          <label> By <input id="entryBy" placeholder="By whom (who brought)" /></label>
+          <label class="full"> From (source) <input id="entryFrom" placeholder="From which account or source" /></label>
+          <label class="full"> Note <textarea id="entryNote" placeholder="Optional details..."></textarea></label>
+
+          <label class="checkbox-row"><input id="entryUnpaid" type="checkbox" /> Mark as Unpaid (Pending Udhaar)</label>
+
+          <div class="custom-area full" id="customArea">
+            <div class="custom-title">Custom fields for account</div>
+            <div id="customList"></div>
+            <div class="custom-add">
+              <input id="customLabel" placeholder="Field label (e.g. Receipt #)" />
+              <button type="button" id="addCustomField" class="btn tiny">Add field</button>
+            </div>
+          </div>
+
+          <div class="form-actions full">
+            <button type="button" id="saveEntry" class="btn primary">Save</button>
+            <button type="button" id="cancelEntry" class="btn">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account create modal -->
+  <div id="accountOverlay" class="modal-overlay hidden">
+    <div class="modal card modal-medium" id="accountModal">
+      <div class="modal-header"><h3>Create account</h3><button id="closeAccount" class="close">✕</button></div>
+      <div class="modal-body">
+        <label>Account name <input id="newAccountName" /></label>
+        <div class="custom-area">
+          <div class="custom-title">Create fields for this account (optional)</div>
+          <div id="newAccountCustom"></div>
+          <div class="custom-add">
+            <input id="newCustomLabel" placeholder="Field label (e.g. Receipt #)" />
+            <button type="button" id="addNewCustom" class="btn tiny">Add field</button>
+          </div>
+        </div>
+        <div class="form-actions"><button id="createAccount" class="btn primary">Create</button><button id="cancelCreate" class="btn">Cancel</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
