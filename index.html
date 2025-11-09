@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Home Finance — UI v2</title>
+<link rel="stylesheet" href="style.css">
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">HF</div>
+      <h1>Home Finance Dashboard (UI v2)</h1>
+    </header>
+
+    <div class="cards">
+      <div class="card">Total Saving<br><strong id="totalSaving">₹0</strong></div>
+      <div class="card">Total Expense<br><strong id="totalExpense">₹0</strong></div>
+      <div class="card">Trading Amount<br><strong id="tradingAmount">₹0</strong></div>
+      <div class="card">Long Term Investment<br><strong id="longTerm">₹0</strong></div>
+      <div class="card">Pending Udhaar<br><strong id="pendingUdhaar">₹0</strong></div>
+    </div>
+
+    <div class="add-row">
+      <button id="openAdd" class="primary">+ Add Entry</button>
+    </div>
+
+    <div class="main-grid">
+      <div class="charts">
+        <div class="panel" id="chartPanel">Charts area (demo)</div>
+      </div>
+      <aside class="sidebar">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Accounts Summary</strong>
+            <button id="addAccountBtn" class="small">+ Add</button>
+          </div>
+          <div id="accountsList" class="accountsList"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="panel" id="recentPanel">
+      <strong>Recent Entries</strong>
+      <table id="recentTable"><thead><tr><th>Date</th><th>Type</th><th>Account</th><th>Product</th><th>Amount</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Entry</h3>
+        <button id="closeModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Date <input id="entryDate" type="date"></label>
+          <label>Type
+            <select id="entryType"><option value="credit">Credit</option><option value="debit">Debit</option></select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Account
+            <select id="entryAccount"><option value="">No accounts - create one (+)</option></select>
+          </label>
+          <button id="accountPlus" class="small">+</button>
+          <label>Amount (₹) <input id="entryAmount" type="number" /></label>
+        </div>
+
+        <div class="form-row">
+          <label>Product <input id="entryProduct" placeholder="Product / Category"/></label>
+          <label>Quantity <input id="entryQty" placeholder="Qty" /></label>
+        </div>
+
+        <div class="form-row">
+          <label>For <input id="entryFor" placeholder="For whom" /></label>
+          <label>By <input id="entryBy" placeholder="By whom" /></label>
+        </div>
+
+        <div class="form-row">
+          <label>From (source) <input id="entryFrom" placeholder="From which account or source" /></label>
+        </div>
+
+        <div>
+          <label>Note <textarea id="entryNote" placeholder="Optional details..."></textarea></label>
+        </div>
+
+        <div style="margin-top:10px">
+          <label><input id="markUnpaid" type="checkbox" /> Mark as Unpaid (Pending Udhaar)</label>
+        </div>
+
+        <!-- Custom fields area (hidden until account selected) -->
+        <div id="customFieldsContainer" class="customFields hidden">
+          <strong>Custom fields for account</strong>
+          <div id="customList"></div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="newFieldLabel" placeholder="Field label (e.g. Receipt #)"/>
+            <button id="addFieldBtn" class="small">Add field</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button id="saveEntry" class="primary">Save</button>
+        <button id="cancelEntry">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
