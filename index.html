@@ -13,47 +13,42 @@
   body { margin:0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 15px; }
   .app { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr 350px; gap: 20px; display:none; }
   
-  /* LEFT SIDEBAR: Master Settings Alignment Fix */
+  /* Sidebar Settings */
   aside .card { height: 92vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
   .config-section { margin-bottom: 25px; }
   .config-section p { margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
-  
-  .config-item { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 8px 12px; background: #f8fafc; border-radius: 8px; 
-    margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border);
-  }
-  .btn-del-sm { 
-    background: #fee2e2; color: #ef4444; border: none; width: 22px; height: 22px; 
-    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;
-  }
-  .btn-del-sm:hover { background: #ef4444; color: white; }
+  .config-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border); }
+  .btn-del-sm { background: #fee2e2; color: #ef4444; border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+  /* Stats Header Layout */
+  .stats-header { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 20px; }
 
   /* Runway Widget */
-  .runway-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 20px; border-radius: var(--radius); margin-bottom: 20px; }
+  .runway-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 20px; border-radius: var(--radius); }
   .runway-val { font-size: 32px; font-weight: 800; color: #fbbf24; margin: 5px 0; }
   .runway-bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; }
   .runway-bar-fill { height: 100%; background: #fbbf24; border-radius: 10px; transition: 1s; width: 0%; }
 
-  /* Main & Right UI */
+  /* Health Score Widget */
+  .health-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .score-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; border: 5px solid #e2e8f0; margin-bottom: 8px; transition: 0.5s; }
+  .score-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* General UI */
   #walletGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .w-card { background: var(--card); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .w-card { background: var(--card); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border); }
   .w-val { font-size: 18px; font-weight: 800; color: var(--primary); }
   .card { background: var(--card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-  
   input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; font-size: 13px; }
   .btn { cursor: pointer; padding: 10px; border-radius: 8px; border: none; font-weight: 700; width: 100%; }
   .btn-save { background: var(--success); color: white; font-size: 16px; margin-top: 10px; }
   
-  /* History Rows */
+  /* History Color Coding */
   .row-credit { border-left: 5px solid var(--success); background: #f0fdf4 !important; }
   .row-debit { border-left: 5px solid var(--danger); background: #fef2f2 !important; }
   .row-transfer { border-left: 5px solid var(--warning); background: #fffbeb !important; }
 
-  /* Dynamic Fields UI */
-  .field-row { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 8px; position: relative; }
-  .field-del { position: absolute; right: 10px; top: 8px; color: var(--danger); cursor: pointer; font-size: 10px; font-weight: bold; }
-
+  /* Loader & Table */
   #loader { position: fixed; inset: 0; background: white; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; }
@@ -68,25 +63,22 @@
   <aside>
     <div class="card">
       <h2 style="color:var(--primary); margin:0 0 20px 0; font-size: 18px;">⚙️ Master Settings</h2>
-      
       <div class="config-section">
         <p>1. WALLETS (ACCOUNTS)</p>
         <div id="accList"></div>
         <input id="newAccName" placeholder="Bank or Cash Name">
         <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ Add Wallet</button>
       </div>
-
       <div class="config-section">
         <p>2. CATEGORIES</p>
         <div id="catList"></div>
         <input id="newCatName" placeholder="Salary, Rent, etc.">
         <button class="btn" style="background:var(--primary); color:white" onclick="addItem('categories', 'newCatName')">+ Add Category</button>
       </div>
-
       <div class="config-section">
         <p>3. FORM FIELDS</p>
         <div id="fieldList"></div>
-        <input id="newFieldName" placeholder="Field Name (e.g. Note)">
+        <input id="newFieldName" placeholder="Field Name">
         <select id="newFieldType">
           <option value="text">Text Box</option>
           <option value="number">Number</option>
@@ -98,11 +90,18 @@
   </aside>
 
   <div class="main">
-    <div class="runway-card">
-      <div style="font-size: 12px; opacity: 0.8; letter-spacing: 1px;">WEALTH RUNWAY (SURVIVAL METER)</div>
-      <div class="runway-val" id="runwayValue">Calculating...</div>
-      <div id="runwayDetail" style="font-size: 11px; opacity: 0.7;">Add more data for accurate prediction</div>
-      <div class="runway-bar-bg"><div class="runway-bar-fill" id="runwayBar"></div></div>
+    <div class="stats-header">
+      <div class="runway-card">
+        <div style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">SURVIVAL RUNWAY</div>
+        <div class="runway-val" id="runwayValue">Analyzing...</div>
+        <div id="runwayDetail" style="font-size: 11px; opacity: 0.7;">Waiting for data...</div>
+        <div class="runway-bar-bg"><div class="runway-bar-fill" id="runwayBar"></div></div>
+      </div>
+      <div class="health-card">
+        <div class="score-label">Health Score</div>
+        <div class="score-circle" id="scoreCircle">--</div>
+        <div id="scoreStatus" style="font-size: 13px; font-weight: 700; color: #64748b;">Waiting...</div>
+      </div>
     </div>
 
     <div id="walletGrid"></div>
@@ -116,7 +115,7 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3>Transaction History</h3>
-        <input id="searchInp" placeholder="🔍 Search any record..." oninput="renderHistory()" style="width:250px; margin:0; border-color:var(--primary)">
+        <input id="searchInp" placeholder="🔍 Search..." oninput="renderHistory()" style="width:200px; margin:0;">
       </div>
       <div style="overflow-x:auto">
         <table><thead id="tableHead"></thead><tbody id="txBody"></tbody></table>
@@ -127,38 +126,20 @@
   <div class="right-col">
     <div class="card">
       <h3>Add New Entry</h3>
-      
-      <label><b>Type</b></label>
       <select id="txType" onchange="toggleForm()">
         <option value="Credit">➕ CREDIT</option>
         <option value="Debit">➖ DEBIT</option>
         <option value="Transfer">🔄 TRANSFER</option>
       </select>
-
-      <div id="normalAcc">
-        <label><b>Wallet</b></label>
-        <select id="accSelect"></select>
+      <div id="normalAcc"><select id="accSelect"></select></div>
+      <div id="transferAcc" style="display:none; background:#fffbeb; padding:10px; border-radius:8px; margin-bottom:10px;">
+        <label style="font-size:11px;">From</label><select id="accFrom"></select>
+        <label style="font-size:11px;">To</label><select id="accTo"></select>
       </div>
-
-      <div id="transferAcc" style="display:none; background:#fffbeb; padding:10px; border-radius:8px;">
-        <label><b>From Account</b></label>
-        <select id="accFrom"></select>
-        <label><b>To Account</b></label>
-        <select id="accTo"></select>
-      </div>
-
-      <div id="catDiv">
-        <label><b>Category</b></label>
-        <select id="catSelect"></select>
-      </div>
-
+      <div id="catDiv"><select id="catSelect"></select></div>
       <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-      
-      <label><b>Choose Fields to Fill</b></label>
       <select id="fieldSelector" onchange="attachField()"></select>
-      
       <div id="dynamicFields"></div>
-
       <button class="btn btn-save" onclick="saveTransaction()">Save Record</button>
     </div>
   </div>
@@ -175,18 +156,15 @@ async function init() {
     const res = await fetch(API_URL);
     const data = await res.json();
     for(let k in data) { try { CLOUD_DATA[k] = JSON.parse(data[k]); } catch(e) { CLOUD_DATA[k] = data[k]; } }
-    
-    // Default config if first time
     if(!CLOUD_DATA.fields || CLOUD_DATA.fields.length === 0) {
       CLOUD_DATA.fields = [{name:'Date', type:'date'}, {name:'Amount', type:'number'}, {name:'Note', type:'text'}];
       CLOUD_DATA.accounts = ['HDFC Bank', 'Cash'];
-      CLOUD_DATA.categories = ['Salary', 'Grocery', 'Investment'];
+      CLOUD_DATA.categories = ['Salary', 'Grocery'];
     }
-    
     refreshUI();
     document.getElementById('loader').style.display = 'none';
     document.getElementById('mainApp').style.display = 'grid';
-  } catch(e) { alert("Check your API URL!"); }
+  } catch(e) { alert("Check API!"); }
 }
 
 async function sync(key, value) {
@@ -194,83 +172,51 @@ async function sync(key, value) {
   await fetch(API_URL, { method:'POST', body:JSON.stringify({key, data:JSON.stringify(value)}) });
 }
 
-function toggleForm() {
-  const type = document.getElementById('txType').value;
-  document.getElementById('normalAcc').style.display = type==='Transfer'?'none':'block';
-  document.getElementById('catDiv').style.display = type==='Transfer'?'none':'block';
-  document.getElementById('transferAcc').style.display = type==='Transfer'?'block':'none';
-}
-
-function attachField() {
-  const name = document.getElementById('fieldSelector').value;
-  if(!name || activeFields.has(name)) return;
-  activeFields.add(name);
-  const fObj = CLOUD_DATA.fields.find(f => f.name === name);
-  const div = document.createElement('div');
-  div.className = 'field-row';
-  div.id = `row_${name.replace(/\s/g,'_')}`;
-  div.innerHTML = `<span class="field-del" onclick="detachField('${name}')">REMOVE ✖</span><label style="font-size:11px;font-weight:bold">${name}</label>
-                   <input type="${fObj.type}" id="input_${name.replace(/\s/g,'_')}">`;
-  document.getElementById('dynamicFields').appendChild(div);
-  document.getElementById('fieldSelector').value = "";
-}
-
-function detachField(n) { activeFields.delete(n); document.getElementById(`row_${n.replace(/\s/g,'_')}`).remove(); }
-
-async function saveTransaction() {
-  const type = document.getElementById('txType').value;
-  let entry = { id: Date.now(), _type: type };
-  
-  if(type==='Transfer') {
-    entry._accFrom = document.getElementById('accFrom').value;
-    entry._accTo = document.getElementById('accTo').value;
-    entry._cat = "Internal Transfer";
-    if(entry._accFrom === entry._accTo) return alert("Accounts can't be same!");
-  } else {
-    entry._acc = document.getElementById('accSelect').value;
-    entry._cat = document.getElementById('catSelect').value;
-  }
-
-  activeFields.forEach(f => {
-    entry[f] = document.getElementById(`input_${f.replace(/\s/g,'_')}`).value;
-  });
-
-  if(!entry.Amount) return alert("Amount field is mandatory!");
-
-  CLOUD_DATA.txs.unshift(entry);
-  await sync('txs', CLOUD_DATA.txs);
-  
-  document.getElementById('dynamicFields').innerHTML = '';
-  activeFields.clear();
-  refreshUI();
-}
-
-function updateRunway(netWorth, txs) {
+function updateHealthAndRunway(netWorth, txs) {
   const debits = txs.filter(t => t._type === 'Debit' && t.Amount);
-  if (debits.length < 2 || netWorth <= 0) {
-    document.getElementById('runwayValue').innerText = "Analyzing...";
-    return;
+  const credits = txs.filter(t => t._type === 'Credit' && t.Amount);
+  
+  let score = 0;
+  let runwayDays = 0;
+
+  // 1. Calculate Runway Logic
+  if (debits.length >= 2 && netWorth > 0) {
+    const totalD = debits.reduce((s, t) => s + parseFloat(t.Amount), 0);
+    const daysRange = Math.max(1, (new Date(debits[0].Date) - new Date(debits[debits.length-1].Date)) / 86400000);
+    const dailyBurn = totalD / daysRange;
+    runwayDays = Math.round(netWorth / dailyBurn);
+
+    const val = document.getElementById('runwayValue');
+    const bar = document.getElementById('runwayBar');
+    if(runwayDays > 365) { val.innerText = (runwayDays/365).toFixed(1) + " Years"; bar.style.width="100%"; bar.style.backgroundColor="#10b981"; score += 50; }
+    else if(runwayDays > 30) { val.innerText = (runwayDays/30).toFixed(1) + " Months"; bar.style.width="60%"; bar.style.backgroundColor="#fbbf24"; score += 30; }
+    else { val.innerText = runwayDays + " Days"; bar.style.width="20%"; bar.style.backgroundColor="#ef4444"; score += 10; }
+    document.getElementById('runwayDetail').innerText = `Daily Burn: ₹${Math.round(dailyBurn)}`;
   }
-  const totalD = debits.reduce((s, t) => s + parseFloat(t.Amount), 0);
-  const days = Math.max(1, (new Date(debits[0].Date) - new Date(debits[debits.length-1].Date)) / 86400000);
-  const daily = totalD / days;
-  const survivalDays = Math.round(netWorth / daily);
-  
-  const val = document.getElementById('runwayValue');
-  const bar = document.getElementById('runwayBar');
-  
-  if(survivalDays > 365) { val.innerText = (survivalDays/365).toFixed(1) + " Years"; bar.style.backgroundColor = "#10b981"; bar.style.width="100%"; }
-  else if(survivalDays > 30) { val.innerText = (survivalDays/30).toFixed(1) + " Months"; bar.style.backgroundColor = "#fbbf24"; bar.style.width="60%"; }
-  else { val.innerText = survivalDays + " Days"; bar.style.backgroundColor = "#ef4444"; bar.style.width="20%"; }
-  
-  document.getElementById('runwayDetail').innerText = `Monthly Burn: ₹${Math.round(daily*30)} | Net Worth: ₹${netWorth}`;
+
+  // 2. Savings Rate Logic (Score up to 50)
+  const totalIncome = credits.reduce((s, t) => s + parseFloat(t.Amount), 0);
+  const totalExpense = debits.reduce((s, t) => s + parseFloat(t.Amount), 0);
+  if(totalIncome > 0) {
+    const savingsRate = ((totalIncome - totalExpense) / totalIncome) * 100;
+    if(savingsRate > 40) score += 50;
+    else if(savingsRate > 20) score += 30;
+    else if(savingsRate > 0) score += 10;
+  }
+
+  // Update Score UI
+  const circle = document.getElementById('scoreCircle');
+  const status = document.getElementById('scoreStatus');
+  circle.innerText = score;
+  if(score >= 80) { circle.style.borderColor = "#10b981"; status.innerText = "EXCELLENT 🚀"; status.style.color="#10b981"; }
+  else if(score >= 40) { circle.style.borderColor = "#fbbf24"; status.innerText = "GOOD 👍"; status.style.color="#fbbf24"; }
+  else { circle.style.borderColor = "#ef4444"; status.innerText = "CRITICAL ⚠️"; status.style.color="#ef4444"; }
 }
 
 function renderWallets() {
   const grid = document.getElementById('walletGrid'); grid.innerHTML = '';
   let bals = {}; let tC=0, tD=0, net=0, monthMap={};
   CLOUD_DATA.accounts.forEach(a => bals[a] = 0);
-
   CLOUD_DATA.txs.forEach(t => {
     const amt = parseFloat(t.Amount) || 0;
     const m = (t.Date || '2025-01').slice(0,7);
@@ -279,15 +225,40 @@ function renderWallets() {
     else if(t._type==='Debit'){ bals[t._acc]-=amt; tD+=amt; monthMap[m].d+=amt; }
     else if(t._type==='Transfer'){ bals[t._accFrom]-=amt; bals[t._accTo]+=amt; }
   });
-
-  for(let a in bals) {
-    net += bals[a];
-    grid.innerHTML += `<div class="w-card"><div style="font-size:10px;font-weight:700;color:#64748b">${a}</div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`;
-  }
-  updateRunway(net, CLOUD_DATA.txs);
+  for(let a in bals) { net += bals[a]; grid.innerHTML += `<div class="w-card"><div style="font-size:10px;font-weight:700;color:#64748b">${a}</div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`; }
+  updateHealthAndRunway(net, CLOUD_DATA.txs);
   updateCharts(monthMap, tC, tD);
 }
 
+function toggleForm() {
+  const type = document.getElementById('txType').value;
+  document.getElementById('normalAcc').style.display = type==='Transfer'?'none':'block';
+  document.getElementById('catDiv').style.display = type==='Transfer'?'none':'block';
+  document.getElementById('transferAcc').style.display = type==='Transfer'?'block':'none';
+}
+function attachField() {
+  const name = document.getElementById('fieldSelector').value;
+  if(!name || activeFields.has(name)) return;
+  activeFields.add(name);
+  const fObj = CLOUD_DATA.fields.find(f => f.name === name);
+  const div = document.createElement('div');
+  div.className = 'field-row';
+  div.id = `row_${name.replace(/\s/g,'_')}`;
+  div.innerHTML = `<span class="field-del" onclick="detachField('${name}')" style="float:right; color:red; cursor:pointer;">✖</span><label style="font-size:11px;font-weight:bold">${name}</label>
+                   <input type="${fObj.type}" id="input_${name.replace(/\s/g,'_')}">`;
+  document.getElementById('dynamicFields').appendChild(div);
+}
+function detachField(n) { activeFields.delete(n); document.getElementById(`row_${n.replace(/\s/g,'_')}`).remove(); }
+async function saveTransaction() {
+  const type = document.getElementById('txType').value;
+  let entry = { id: Date.now(), _type: type };
+  if(type==='Transfer') { entry._accFrom = document.getElementById('accFrom').value; entry._accTo = document.getElementById('accTo').value; entry._cat = "Transfer"; }
+  else { entry._acc = document.getElementById('accSelect').value; entry._cat = document.getElementById('catSelect').value; }
+  activeFields.forEach(f => { entry[f] = document.getElementById(`input_${f.replace(/\s/g,'_')}`).value; });
+  if(!entry.Amount) return alert("Amount mandatory!");
+  CLOUD_DATA.txs.unshift(entry); await sync('txs', CLOUD_DATA.txs);
+  document.getElementById('dynamicFields').innerHTML = ''; activeFields.clear(); refreshUI();
+}
 function renderHistory() {
   const search = document.getElementById('searchInp').value.toLowerCase();
   const allFields = CLOUD_DATA.fields.map(f=>f.name);
@@ -296,42 +267,30 @@ function renderHistory() {
   CLOUD_DATA.txs.forEach(t => {
     if(JSON.stringify(t).toLowerCase().includes(search)) {
       const rowClass = t._type==='Credit'?'row-credit':(t._type==='Debit'?'row-debit':'row-transfer');
-      body.innerHTML += `<tr class="${rowClass}">
-        <td style="font-weight:bold">${t._type}</td>
-        <td>${t._type==='Transfer'?t._accFrom+'➔'+t._accTo:t._acc}</td>
-        <td>${t._cat}</td>
-        ${allFields.map(f=>`<td>${t[f]||'-'}</td>`).join('')}
-        <td><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></td></tr>`;
+      body.innerHTML += `<tr class="${rowClass}"><td>${t._type}</td><td>${t._type==='Transfer'?t._accFrom+'➔'+t._accTo:t._acc}</td><td>${t._cat}</td>${allFields.map(f=>`<td>${t[f]||'-'}</td>`).join('')}<td><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></td></tr>`;
     }
   });
 }
-
 function refreshUI() {
   const accOpts = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
   document.getElementById('accList').innerHTML = CLOUD_DATA.accounts.map((a,i)=>`<div class="config-item">${a}<button class="btn-del-sm" onclick="deleteItem('accounts',${i})">×</button></div>`).join('');
   document.getElementById('catList').innerHTML = CLOUD_DATA.categories.map((c,i)=>`<div class="config-item">${c}<button class="btn-del-sm" onclick="deleteItem('categories',${i})">×</button></div>`).join('');
   document.getElementById('fieldList').innerHTML = CLOUD_DATA.fields.map((f,i)=>`<div class="config-item">${f.name}<button class="btn-del-sm" onclick="deleteItem('fields',${i})">×</button></div>`).join('');
-  document.getElementById('accSelect').innerHTML = accOpts;
-  document.getElementById('accFrom').innerHTML = accOpts;
-  document.getElementById('accTo').innerHTML = accOpts;
+  document.getElementById('accSelect').innerHTML = accOpts; document.getElementById('accFrom').innerHTML = accOpts; document.getElementById('accTo').innerHTML = accOpts;
   document.getElementById('catSelect').innerHTML = CLOUD_DATA.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
-  document.getElementById('fieldSelector').innerHTML = '<option value="">-- Click to add Field --</option>' + CLOUD_DATA.fields.map(f=>`<option value="${f.name}">${f.name}</option>`).join('');
-  renderWallets();
-  renderHistory();
+  document.getElementById('fieldSelector').innerHTML = '<option value="">-- Add Field --</option>' + CLOUD_DATA.fields.map(f=>`<option value="${f.name}">${f.name}</option>`).join('');
+  renderWallets(); renderHistory();
 }
-
 async function addItem(k, i) { const v=document.getElementById(i).value; if(!v)return; CLOUD_DATA[k].push(v); await sync(k, CLOUD_DATA[k]); document.getElementById(i).value=''; refreshUI(); }
 async function deleteItem(k, idx) { if(confirm("Delete?")) { CLOUD_DATA[k].splice(idx,1); await sync(k, CLOUD_DATA[k]); refreshUI(); } }
-async function addField() { const n=document.getElementById('newFieldName').value; const t=document.getElementById('newFieldType').value; if(!n)return; CLOUD_DATA.fields.push({name:n,type:t}); await sync('fields',CLOUD_DATA.fields); document.getElementById('newFieldName').value=''; refreshUI(); }
+async function addField() { const n=document.getElementById('newFieldName').value; const t=document.getElementById('newFieldType').value; if(!n)return; CLOUD_DATA.fields.push({name:n,type:t}); await sync('fields',CLOUD_DATA.fields); refreshUI(); }
 async function deleteTx(id) { if(confirm("Delete Record?")) { CLOUD_DATA.txs=CLOUD_DATA.txs.filter(t=>t.id!==id); await sync('txs',CLOUD_DATA.txs); refreshUI(); } }
-
 function updateCharts(m,c,d) {
   const l=Object.keys(m).sort();
   if(charts.bar)charts.bar.destroy(); charts.bar=new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:l,datasets:[{label:'Credit',data:l.map(x=>m[x].c),backgroundColor:'#10b981'},{label:'Debit',data:l.map(x=>m[x].d),backgroundColor:'#ef4444'}]},options:{maintainAspectRatio:false}});
   if(charts.pie)charts.pie.destroy(); charts.pie=new Chart(document.getElementById('pieChart'),{type:'doughnut',data:{labels:['Credit','Debit'],datasets:[{data:[c,d],backgroundColor:['#10b981','#ef4444']}]},options:{maintainAspectRatio:false}});
   if(charts.growth)charts.growth.destroy(); charts.growth=new Chart(document.getElementById('growthChart'),{type:'line',data:{labels:l,datasets:[{label:'Savings',data:l.map(x=>m[x].c-m[x].d),borderColor:'#2563eb',tension:0.3}]},options:{maintainAspectRatio:false}});
 }
-
 init();
 </script>
 </body>
