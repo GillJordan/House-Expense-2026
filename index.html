@@ -1,390 +1,309 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Home Finance Dashboard — v4 Final (UI + Firebase)</title>
-
-<link href="style.css" rel="stylesheet" />
-
-<!-- Chart.js (used for demo charts) -->
+<title>Cloud Finance Dashboard - Fixed</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-<!-- Firebase (compat) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+<style>
+  :root {
+    --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+    --primary: #2563eb; --success: #16a34a; --danger: #dc2626; --warning: #ca8a04;
+    --radius: 12px; --border: #e2e8f0;
+  }
+  body { margin:0; font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+  .app { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 240px 1fr 340px; gap: 20px; display:none; }
+  .card { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border); margin-bottom: 20px; }
+  .top-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: var(--card); padding: 14px; border-radius: var(--radius); border: 1px solid var(--border); }
+  .stat-val { font-size: 22px; font-weight: 700; margin-top: 5px; }
+  .field-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); font-size: 13px; }
+  .btn-del-field { color: var(--danger); cursor: pointer; border: none; background: none; font-size: 18px; }
+  input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 12px; box-sizing: border-box; }
+  button { cursor: pointer; padding: 10px; border-radius: 6px; border: none; font-weight: 600; width: 100%; transition: 0.2s; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-muted { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+  .btn-danger-outline { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; margin-top: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 12px; background: #f8fafc; border-bottom: 2px solid var(--border); }
+  td { padding: 12px; border-bottom: 1px solid var(--border); }
+  #loader { position: fixed; inset: 0; background: white; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 600; }
+  #savingToast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 10px 20px; border-radius: 30px; display: none; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  @media (max-width: 1000px) { .app { grid-template-columns: 1fr; } aside { display:none; } }
+</style>
 </head>
 <body>
-  <div class="app">
 
-    <header class="topbar">
-      <div class="brand"><div class="badge">HF</div><div class="title">Home Finance Dashboard</div></div>
-      <div class="user">Logged: Single User</div>
-    </header>
+<div id="loader">🔄 Syncing with Cloud...</div>
+<div id="savingToast">☁️ Saving Structure...</div>
 
-    <main class="container">
-      <section class="summary-cards">
-        <div class="card"> <div class="label">Total Saving</div><div id="totalSaving" class="value">₹0</div></div>
-        <div class="card"> <div class="label">Total Expense</div><div id="totalExpense" class="value">₹0</div></div>
-        <div class="card"> <div class="label">Trading Amount</div><div id="totalTrading" class="value">₹0</div></div>
-        <div class="card"> <div class="label">Long Term Investment</div><div id="totalInvest" class="value">₹0</div></div>
-        <div class="card"> <div class="label">Pending Udhaar</div><div id="totalPending" class="value">₹0</div></div>
-      </section>
+<div class="app" id="mainApp">
+  <aside>
+    <div class="card" style="text-align: center;">
+      <h2 style="color: var(--primary);">Finance App</h2>
+      <button class="btn-muted" onclick="location.reload()">🔄 Refresh Page</button>
+    </div>
+  </aside>
 
-      <div class="addbar">
-        <button id="openAdd" class="btn-primary">+ Add Entry</button>
-        <div class="searchwrap"><input id="globalSearch" placeholder="Search transactions / product / person" /></div>
-      </div>
-
-      <section class="grid">
-        <div class="charts panel">
-          <div class="panel-title">Expense Breakdown & Overview</div>
-          <div class="charts-inner">
-            <canvas id="pieChart"></canvas>
-            <canvas id="barChart"></canvas>
-          </div>
-        </div>
-
-        <aside class="rightcol">
-          <div class="panel accounts">
-            <div class="panel-title">Accounts Summary <button id="addAccountBtn" class="small">+ Add</button></div>
-            <div id="accountsList"></div>
-          </div>
-
-          <div class="panel pending">
-            <div class="panel-title">Pending Udhaar</div>
-            <div id="pendingList">No pending</div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="recent panel full">
-        <div class="panel-title">Recent Entries</div>
-        <table class="tx-table">
-          <thead><tr><th>Date</th><th>Type</th><th>Account</th><th>Product</th><th>Amount</th></tr></thead>
-          <tbody id="txBody"></tbody>
-        </table>
-      </section>
-    </main>
-
-    <!-- Add Entry Modal -->
-    <div id="modal" class="modal hidden" role="dialog" aria-hidden="true">
-      <div class="modal-inner">
-        <div class="modal-head">
-          <h3>Add Entry</h3>
-          <button id="closeModal" class="close">✕</button>
-        </div>
-        <form id="entryForm" class="modal-body">
-          <div class="row">
-            <label>Date <input id="fldDate" type="date" /></label>
-            <label>Type <select id="fldType"><option>Credit</option><option>Debit</option></select></label>
-          </div>
-
-          <div class="row">
-            <label>Account
-              <div class="inline">
-                <select id="fldAccount"><option value="">No accounts - create one (+)</option></select>
-                <button id="fldAccountAdd" type="button" class="small">+</button>
-              </div>
-            </label>
-            <label>Amount (₹) <input id="fldAmount" type="number" /></label>
-          </div>
-
-          <div class="row">
-            <label>Product <input id="fldProduct" list="prodList" placeholder="Product / Category" /></label>
-            <label>Quantity <input id="fldQty" placeholder="Qty" /></label>
-            <datalist id="prodList"></datalist>
-          </div>
-
-          <div class="row">
-            <label>For <input id="fldFor" placeholder="For whom" list="personList" /></label>
-            <label>By <input id="fldBy" placeholder="By whom (who brought)" list="personList" /></label>
-            <datalist id="personList"></datalist>
-          </div>
-
-          <div class="row full">
-            <label>From (source) <input id="fldFrom" placeholder="From which account or source" /></label>
-          </div>
-
-          <div class="row full">
-            <label>Note <textarea id="fldNote" placeholder="Optional details..."></textarea></label>
-          </div>
-
-          <div class="row">
-            <label class="checkbox"><input id="fldUnpaid" type="checkbox" /> Mark as Unpaid (Pending Udhaar)</label>
-          </div>
-
-          <div class="row full custom-area">
-            <div class="custom-title">Custom fields for account</div>
-            <div class="custom-controls">
-              <input id="customLabel" placeholder="Field label (e.g. Receipt #)" />
-              <button id="addFieldBtn" type="button" class="small">Add field</button>
-            </div>
-            <div id="customFields"></div>
-          </div>
-
-          <div class="actions">
-            <button type="button" id="saveBtn" class="btn-primary">Save</button>
-            <button type="button" id="cancelBtn" class="btn-ghost">Cancel</button>
-          </div>
-        </form>
-      </div>
+  <div class="main">
+    <div class="top-cards">
+      <div class="stat-card"><div style="font-size:12px; color:var(--muted)">INCOME</div><div class="stat-val" id="st-inc" style="color:var(--success)">₹0</div></div>
+      <div class="stat-card"><div style="font-size:12px; color:var(--muted)">EXPENSE</div><div class="stat-val" id="st-exp" style="color:var(--danger)">₹0</div></div>
+      <div class="stat-card"><div style="font-size:12px; color:var(--muted)">BALANCE</div><div class="stat-val" id="st-bal">₹0</div></div>
+      <div class="stat-card"><div style="font-size:12px; color:var(--muted)">LOANS</div><div class="stat-val" id="st-loan" style="color:var(--warning)">₹0</div></div>
     </div>
 
-    <footer class="foot">UI-only demo — v4 Final</footer>
+    <div class="card" style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+      <div style="height:250px"><canvas id="barChart"></canvas></div>
+      <div style="height:250px;"><canvas id="pieChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>History</h3>
+        <input id="searchInp" placeholder="Search..." oninput="refreshDashboard()" style="width:150px; margin:0">
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Type</th><th>Details</th><th>Amount</th><th>Action</th></tr></thead>
+        <tbody id="txBody"></tbody>
+      </table>
+    </div>
   </div>
 
+  <div class="right-col">
+    <div class="card">
+      <h3>Add New Entry</h3>
+      <select id="typeSelect" onchange="renderDynamicFields()"></select>
+      <div id="dynamicArea"></div>
+      <button class="btn-primary" onclick="saveTransaction()">Save Transaction</button>
+    </div>
+
+    <div class="card">
+      <h3>Configuration</h3>
+      <select id="configTypeSel" onchange="updateFieldManager()">
+        <option value="new">+ New Type</option>
+      </select>
+      <div id="fieldManagerArea" style="display:none; margin-top:15px;">
+        <div id="fieldList"></div>
+        <div style="background:#f8fafc; padding:10px; border-radius:8px; border: 1px dashed var(--border); margin-top:10px;">
+          <input id="newFieldLabel" placeholder="Field Name">
+          <select id="newFieldType">
+            <option value="text">Text</option><option value="number">Number</option><option value="date">Date</option>
+          </select>
+          <button class="btn-primary" onclick="addNewField()">+ Add Field</button>
+        </div>
+        <button class="btn-danger-outline" onclick="deleteExistingType()">🗑 Delete Type</button>
+      </div>
+      <div id="newTypeArea" style="margin-top:10px;">
+        <input id="newTypeName" placeholder="New Type Name">
+        <button class="btn-primary" onclick="createNewType()">Create Type</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ------------------------
-// Firebase config - replace if needed (your project)
-const firebaseConfig = {
-  apiKey: "AIzaSyCZ_eQonlY2OxSyJt55Efjr8TH1BYGIQ-Q",
-  authDomain: "house-expense-a4c13.firebaseapp.com",
-  projectId: "house-expense-a4c13"
-};
-// Initialize
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// 🔴 APNA NEW DEPLOYMENT URL YAHAN DALEIN
+const API_URL = "https://script.google.com/macros/s/AKfycbwjwSeS7svH3Rz_bQ6kfTrvw3oJIgGOy2m_saj_0TmoU6zkSUpk7mZI60aPsYtwmAIO/exec"; 
 
-// local helpers
-const $ = (id) => document.getElementById(id);
+let CLOUD_DATA = {}; 
+let charts = { bar: null, pie: null };
 
-// UI refs
-const modal = $('modal');
-const openAdd = $('openAdd');
-const closeModal = $('closeModal');
-const saveBtn = $('saveBtn');
-const cancelBtn = $('cancelBtn');
-const fldDate = $('fldDate');
-const fldType = $('fldType');
-const fldAccount = $('fldAccount');
-const fldAccountAdd = $('fldAccountAdd');
-const fldAmount = $('fldAmount');
-const fldProduct = $('fldProduct');
-const prodList = $('prodList');
-const fldQty = $('fldQty');
-const fldFor = $('fldFor');
-const fldBy = $('fldBy');
-const personList = $('personList');
-const fldFrom = $('fldFrom');
-const fldNote = $('fldNote');
-const fldUnpaid = $('fldUnpaid');
-const customFields = $('customFields');
-const addFieldBtn = $('addFieldBtn');
-const customLabel = $('customLabel');
-const accountsList = $('accountsList');
-const txBody = $('txBody');
-const totalSaving = $('totalSaving');
-const totalExpense = $('totalExpense');
-const totalTrading = $('totalTrading');
-const totalInvest = $('totalInvest');
-const totalPending = $('totalPending');
-
-// state
-let accounts = []; // {id, name, customFields: [{label, valueKey}], balance}
-let productsSet = new Set();
-let personsSet = new Set();
-
-// default date
-fldDate.value = new Date().toISOString().slice(0,10);
-
-// open/close modal
-openAdd.addEventListener('click', ()=>{ showModal(); });
-closeModal.addEventListener('click', hideModal);
-cancelBtn.addEventListener('click', hideModal);
-
-function showModal(){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
-function hideModal(){ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); clearForm(); }
-
-// clear form
-function clearForm(){
-  fldAmount.value=''; fldProduct.value=''; fldQty.value=''; fldFor.value=''; fldBy.value=''; fldFrom.value=''; fldNote.value=''; fldUnpaid.checked=false;
-  customFields.innerHTML=''; customLabel.value='';
+async function init() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    for(let k in data) { 
+      try { CLOUD_DATA[k] = JSON.parse(data[k]); } 
+      catch(e) { CLOUD_DATA[k] = data[k]; } 
+    }
+    if(!CLOUD_DATA.saved_types) { 
+      CLOUD_DATA = { saved_types:['Income','Expense'], txs:[], form_Income:[{label:'Date',type:'date'},{label:'Amount',type:'number'}], form_Expense:[{label:'Date',type:'date'},{label:'Amount',type:'number'}] }; 
+    }
+    setupUI();
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'grid';
+  } catch(e) { alert("Data load nahi ho paya. URL check karein."); }
 }
 
-// load initial data (accounts + transactions)
-async function loadInitial(){
-  // load accounts
-  const accSnap = await db.collection('accounts').get().catch(()=>({empty:true}));
-  if(!accSnap.empty){
-    accSnap.forEach(d=>{
-      const r = d.data(); r.id = d.id; accounts.push(r);
-    });
-  } else {
-    // create default accounts locally if none
-    accounts = [
-      {id:'acc_daddy', name:'Daddy Budget', balance:11850, customFields:[]},
-      {id:'acc_me', name:'My Account', balance:9500, customFields:[]},
-      {id:'acc_mata', name:'Mataji Account', balance:21000, customFields:[]},
-      {id:'acc_cash', name:'Cash', balance:0, customFields:[]}
-    ];
-  }
-  renderAccounts();
-  // load transactions (limit 50)
-  const txSnap = await db.collection('transactions').orderBy('createdAt','desc').limit(50).get().catch(()=>({empty:true}));
-  let txs = [];
-  if(!txSnap.empty){
-    txSnap.forEach(d=>{
-      const t = d.data(); t.id = d.id; txs.push(t);
-      if(t.product) productsSet.add(t.product);
-      if(t.for) personsSet.add(t.for);
-      if(t.by) personsSet.add(t.by);
-    });
-  } else {
-    // demo entries
-    txs = [
-      {date:'2025-11-01', type:'Credit', account:'Daddy Budget', product:'Daddy Fund', amount:20000},
-      {date:'2025-11-03', type:'Debit', account:'Daddy Budget', product:'Rent', amount:8000},
-      {date:'2025-11-05', type:'Debit', account:'Daddy Budget', product:'Milk', amount:150}
-    ];
-  }
-  renderTransactions(txs);
-  populateSuggestionLists();
-  updateTotals(txs);
+// ☁️ SYNC FUNCTION WITH AWAIT (VERY IMPORTANT)
+async function sync(key, value) {
+  CLOUD_DATA[key] = value;
+  document.getElementById('savingToast').style.display = 'block';
+  try { 
+    await fetch(API_URL, { 
+      method:'POST', 
+      body:JSON.stringify({key, data:JSON.stringify(value)}) 
+    }); 
+  } 
+  catch(e) { console.error("Sync Error:", e); } 
+  finally { setTimeout(() => document.getElementById('savingToast').style.display = 'none', 800); }
 }
 
-// render accounts list + dropdown
-function renderAccounts(){
-  accountsList.innerHTML='';
-  fldAccount.innerHTML = '';
-  accounts.forEach(a=>{
-    const div = document.createElement('div'); div.className='acc-row';
-    div.innerHTML = `<div class="acc-name">${a.name}</div><div class="acc-bal">₹${a.balance||0}</div>`;
-    accountsList.appendChild(div);
-    const opt = document.createElement('option'); opt.value = a.name; opt.textContent = a.name; fldAccount.appendChild(opt);
+function setupUI() { populateSelects(); refreshDashboard(); }
+
+function populateSelects() {
+  const types = CLOUD_DATA.saved_types || [];
+  const mainSel = document.getElementById('typeSelect');
+  const confSel = document.getElementById('configTypeSel');
+  mainSel.innerHTML = '<option value="">-- Select Category --</option>';
+  confSel.innerHTML = '<option value="new">+ New Type</option>';
+  types.forEach(t => {
+    mainSel.innerHTML += `<option value="${t}">${t}</option>`;
+    confSel.innerHTML += `<option value="${t}">${t}</option>`;
   });
 }
 
-// add account button (opens small prompt to create account)
-fldAccountAdd.addEventListener('click', ()=>{
-  const name = prompt('Enter new account name (example: HDFC Credit Card)');
+function updateFieldManager() {
+  const selectedType = document.getElementById('configTypeSel').value;
+  const fieldArea = document.getElementById('fieldManagerArea');
+  const newTypeArea = document.getElementById('newTypeArea');
+  const list = document.getElementById('fieldList');
+  if(selectedType === 'new') { fieldArea.style.display = 'none'; newTypeArea.style.display = 'block'; } 
+  else {
+    fieldArea.style.display = 'block'; newTypeArea.style.display = 'none';
+    list.innerHTML = '';
+    const fields = CLOUD_DATA['form_' + selectedType] || [];
+    fields.forEach((f, idx) => {
+      list.innerHTML += `<div class="field-item"><span>${f.label} (${f.type})</span><button class="btn-del-field" onclick="deleteField('${selectedType}', ${idx})">×</button></div>`;
+    });
+  }
+}
+
+async function deleteField(type, idx) {
+  if(!confirm("Field delete karein?")) return;
+  const key = 'form_' + type;
+  CLOUD_DATA[key].splice(idx, 1);
+  await sync(key, CLOUD_DATA[key]);
+  updateFieldManager();
+  if(document.getElementById('typeSelect').value === type) renderDynamicFields();
+}
+
+async function addNewField() {
+  const type = document.getElementById('configTypeSel').value;
+  const label = document.getElementById('newFieldLabel').value.trim();
+  const fType = document.getElementById('newFieldType').value;
+  if(!label) return;
+  const key = 'form_' + type;
+  if(!CLOUD_DATA[key]) CLOUD_DATA[key] = [];
+  CLOUD_DATA[key].push({ label, type: fType });
+  await sync(key, CLOUD_DATA[key]);
+  document.getElementById('newFieldLabel').value = '';
+  updateFieldManager();
+}
+
+async function createNewType() {
+  const name = document.getElementById('newTypeName').value.trim();
   if(!name) return;
-  const acc = {id:'local_'+Date.now(), name, balance:0, customFields:[]};
-  accounts.push(acc);
-  // Save to firestore accounts collection
-  db.collection('accounts').add(acc).catch(()=>console.log('account save failed (offline)'));
-  renderAccounts();
-  alert('Account created: '+name);
-});
-
-// transactions render
-function renderTransactions(txs){
-  txBody.innerHTML='';
-  txs.forEach(t=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${t.date||t.createdAt?.toDate?.().toLocaleDateString()||''}</td><td>${t.type||''}</td><td>${t.account||''}</td><td>${t.product||''}</td><td>₹${t.amount||0}</td>`;
-    txBody.appendChild(tr);
-  });
+  if(CLOUD_DATA.saved_types.includes(name)) return alert("Already exists");
+  CLOUD_DATA.saved_types.push(name);
+  await sync('saved_types', CLOUD_DATA.saved_types);
+  await sync('form_' + name, [{label:'Date', type:'date'}, {label:'Amount', type:'number'}]);
+  document.getElementById('newTypeName').value = '';
+  populateSelects();
+  document.getElementById('configTypeSel').value = name;
+  updateFieldManager();
 }
 
-// add custom field UI
-addFieldBtn.addEventListener('click', ()=>{
-  const label = customLabel.value.trim(); if(!label) return alert('Enter a label');
-  const key = 'f_' + label.toLowerCase().replace(/\s+/g,'_') + '_' + Date.now();
-  const row = document.createElement('div'); row.className='custom-row';
-  row.innerHTML = `<label>${label} <input data-key="${key}" placeholder="${label}" /></label> <button class="small remove">Remove</button>`;
-  customFields.appendChild(row);
-  row.querySelector('.remove').addEventListener('click', ()=>row.remove());
-  customLabel.value='';
-});
-
-// Save entry
-saveBtn.addEventListener('click', async ()=>{
-  const doc = {
-    date: fldDate.value,
-    type: fldType.value,
-    account: fldAccount.value,
-    amount: Number(fldAmount.value||0),
-    product: fldProduct.value.trim(),
-    qty: fldQty.value.trim(),
-    for: fldFor.value.trim(),
-    by: fldBy.value.trim(),
-    from: fldFrom.value.trim(),
-    note: fldNote.value.trim(),
-    unpaid: fldUnpaid.checked,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  // collect custom fields
-  const cfields = {};
-  customFields.querySelectorAll('[data-key]').forEach(inp=>{
-    cfields[inp.getAttribute('data-key')] = inp.value;
-  });
-  if(Object.keys(cfields).length) doc.custom = cfields;
-  // push to firestore
-  try{
-    await db.collection('transactions').add(doc);
-    alert('Saved to Firestore (or queued).');
-  }catch(e){
-    // fallback localStorage
-    const arr = JSON.parse(localStorage.getItem('tx_offline')||'[]');
-    arr.push(doc); localStorage.setItem('tx_offline', JSON.stringify(arr));
-    alert('Saved locally (offline).');
+async function deleteExistingType() {
+  const type = document.getElementById('configTypeSel').value;
+  if(confirm(`"${type}" ko delete karein?`)) {
+    CLOUD_DATA.saved_types = CLOUD_DATA.saved_types.filter(t => t !== type);
+    await sync('saved_types', CLOUD_DATA.saved_types);
+    populateSelects(); updateFieldManager();
   }
-  hideModal();
-  // refresh simple UI (append)
-  renderTransactions([doc, ...Array.from(txBody.querySelectorAll('tr')).map(tr=>{
-    const td = tr.querySelectorAll('td');
-    return {date:td[0].innerText, type:td[1].innerText, account:td[2].innerText, product:td[3].innerText, amount:td[4].innerText.replace('₹','')};
-  })]);
-  // update suggestions and totals
-  if(doc.product) productsSet.add(doc.product);
-  if(doc.for) personsSet.add(doc.for);
-  populateSuggestionLists();
-});
-
-// search suggestions lists
-function populateSuggestionLists(){
-  prodList.innerHTML='';
-  personList.innerHTML='';
-  Array.from(productsSet).forEach(p=> prodList.insertAdjacentHTML('beforeend', `<option value="${p}">`));
-  Array.from(personsSet).forEach(p=> personList.insertAdjacentHTML('beforeend', `<option value="${p}">`));
 }
 
-// update totals simple demo
-function updateTotals(txs){
-  let saving=0, expense=0, trading=0, invest=0, pending=0;
-  txs.forEach(t=>{
-    const amt = Number(t.amount||0);
-    if(t.type && t.type.toLowerCase()==='credit') saving += amt;
-    else expense += amt;
+function renderDynamicFields() {
+  const type = document.getElementById('typeSelect').value;
+  const area = document.getElementById('dynamicArea');
+  area.innerHTML = ''; if(!type) return;
+  const fields = CLOUD_DATA['form_' + type] || [];
+  fields.forEach(f => {
+    const safe = f.label.replace(/\s/g, '_');
+    area.innerHTML += `<label style="font-size:12px; font-weight:600;">${f.label}</label><input id="inp_${safe}" type="${f.type}">`;
   });
-  totalSaving.innerText = '₹'+saving;
-  totalExpense.innerText = '₹'+expense;
-  totalTrading.innerText = '₹'+trading;
-  totalInvest.innerText = '₹'+invest;
-  totalPending.innerText = '₹'+pending;
 }
 
-// basic charts (demo)
-function initCharts(){
-  const pie = new Chart(document.getElementById('pieChart'),{type:'pie',data:{labels:['Rent','Food','Trading','Other'], datasets:[{data:[40,25,25,10]}]}});
-  const bar = new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['Saving','Expense','Trading','Investment'], datasets:[{label:'Amount',data:[40000,18000,12000,5000]}]}});
-}
-
-// init
-initCharts();
-loadInitial();
-
-// search filtering
-$('globalSearch').addEventListener('input', async function(e){
-  const q = e.target.value.trim().toLowerCase();
-  if(!q){ loadInitial(); return; }
-  const snap = await db.collection('transactions').orderBy('createdAt','desc').limit(200).get().catch(()=>({empty:true}));
-  const results = [];
-  if(!snap.empty){
-    snap.forEach(d=>{
-      const r = d.data();
-      const hay = `${r.product||''} ${r.for||''} ${r.by||''} ${r.note||''}`.toLowerCase();
-      if(hay.includes(q)) results.push(r);
-    });
+async function saveTransaction() {
+  const type = document.getElementById('typeSelect').value;
+  if(!type) return alert("Category select karein");
+  const fieldsDef = CLOUD_DATA['form_' + type] || [];
+  let entryData = {};
+  for(let f of fieldsDef) {
+    const safe = f.label.replace(/\s/g, '_');
+    const val = document.getElementById('inp_' + safe).value;
+    const lower = f.label.toLowerCase();
+    if((lower==='date' || lower==='amount') && !val) return alert(f.label + " zaroori hai");
+    entryData[f.label] = (f.type === 'number') ? parseFloat(val) : val;
   }
-  renderTransactions(results);
-});
+  const txs = CLOUD_DATA.txs || [];
+  txs.unshift({ id: Date.now(), type, ...entryData });
+  await sync('txs', txs);
+  refreshDashboard(); renderDynamicFields(); alert("Saved!");
+}
 
-// close modal on ESC
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') hideModal(); });
+function refreshDashboard() {
+  const txs = CLOUD_DATA.txs || [];
+  let inc=0, exp=0, loans=0, monthMap={};
+  const search = document.getElementById('searchInp').value.toLowerCase();
+  const tbody = document.getElementById('txBody'); tbody.innerHTML = '';
 
+  txs.forEach(t => {
+    // FIX: Normalize keys to lowercase for robust mapping
+    const norm = {}; Object.keys(t).forEach(k => norm[k.toLowerCase()] = t[k]);
+    const amt = parseFloat(norm.amount) || 0;
+    const typeStr = (norm.type || "").toLowerCase();
+    const dateStr = norm.date || "-";
+    
+    if(typeStr.includes('income')) inc += amt;
+    else if(typeStr.includes('expense')) exp += amt;
+    if(typeStr.includes('loan')) loans += amt;
+    
+    const mKey = dateStr !== "-" ? dateStr.slice(0, 7) : 'Other';
+    if(!monthMap[mKey]) monthMap[mKey] = {i:0, e:0};
+    if(typeStr.includes('income')) monthMap[mKey].i += amt;
+    else if(typeStr.includes('expense')) monthMap[mKey].e += amt;
+    
+    if(JSON.stringify(t).toLowerCase().includes(search)) {
+      let details = [];
+      Object.keys(t).forEach(k => {
+        if(!['id','type','date','amount'].includes(k.toLowerCase())) details.push(`${k}:${t[k]}`);
+      });
+      tbody.innerHTML += `<tr><td>${dateStr}</td><td>${t.type}</td><td style="font-size:11px; color:var(--muted)">${details.join('|')}</td><td style="font-weight:bold">₹${amt}</td><td><button onclick="deleteTx(${t.id})" style="color:red; background:none; font-size:11px; width:auto;">Del</button></td></tr>`;
+    }
+  });
+  document.getElementById('st-inc').textContent = '₹' + inc;
+  document.getElementById('st-exp').textContent = '₹' + exp;
+  document.getElementById('st-bal').textContent = '₹' + (inc - exp);
+  document.getElementById('st-loan').textContent = '₹' + loans;
+  renderCharts(monthMap, inc, exp);
+}
+
+async function deleteTx(id) {
+  if(!confirm("Record delete karein?")) return;
+  CLOUD_DATA.txs = CLOUD_DATA.txs.filter(t => t.id !== id);
+  await sync('txs', CLOUD_DATA.txs);
+  refreshDashboard();
+}
+
+function renderCharts(monthly, tInc, tExp) {
+  const labels = Object.keys(monthly).sort();
+  if(charts.bar) charts.bar.destroy();
+  charts.bar = new Chart(document.getElementById('barChart'), {
+    type:'bar',
+    data: { labels, datasets: [ { label:'Inc', data: labels.map(l=>monthly[l].i), backgroundColor:'#16a34a' }, { label:'Exp', data: labels.map(l=>monthly[l].e), backgroundColor:'#dc2626' } ] },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+  if(charts.pie) charts.pie.destroy();
+  charts.pie = new Chart(document.getElementById('pieChart'), {
+    type:'doughnut',
+    data: { labels:['Inc','Exp'], datasets: [{ data:[tInc, tExp], backgroundColor:['#16a34a','#dc2626'] }] },
+    options: { responsive:true, maintainAspectRatio:false }
+  });
+}
+
+init();
 </script>
 </body>
 </html>
