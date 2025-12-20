@@ -1,6 +1,0 @@
-[build]
-  publish = "/"
-  command = ""
-
-[dev]
-  framework = "static"
