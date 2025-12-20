@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dynamic Finance Pro</title>
+<title>Ultimate Finance Pro - Transfer Mode</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --bg: #f4f7fa; --card: #ffffff; --text: #1e293b; --primary: #2563eb; 
-    --success: #10b981; --danger: #ef4444; --border: #e2e8f0; --radius: 12px;
+    --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --border: #e2e8f0; --radius: 12px;
   }
   body { margin:0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 15px; }
   .app { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr 350px; gap: 20px; display:none; }
@@ -19,17 +19,18 @@
   .w-val { font-size: 18px; font-weight: 800; color: var(--primary); margin-top: 5px; }
   .card { background: var(--card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
   
-  /* Inputs & Form */
   input, select, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; box-sizing: border-box; font-size: 14px; }
   .btn { cursor: pointer; padding: 10px; border-radius: 8px; border: none; font-weight: 700; width: 100%; transition: 0.2s; }
   .btn-save { background: var(--success); color: white; font-size: 16px; margin-top: 10px; }
   
-  /* Selected Field Box */
-  .field-row { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px; position: relative; }
-  .field-del { position: absolute; right: 8px; top: 5px; color: red; cursor: pointer; font-weight: bold; font-size: 12px; }
+  /* Color Coding Rows */
+  .row-credit { background-color: #f0fdf4 !important; }
+  .row-debit { background-color: #fef2f2 !important; }
+  .row-transfer { background-color: #fffbeb !important; } /* Light Yellow for Transfer */
 
-  /* Master Settings Styling */
-  .config-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+  .field-row { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px; position: relative; }
+  .field-del { position: absolute; right: 8px; top: 5px; color: red; cursor: pointer; font-weight: bold; font-size: 11px; }
+
   .config-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 6px; margin-bottom: 5px; font-size: 13px; border: 1px solid #e2e8f0; }
   .btn-del-sm { background: #fee2e2; color: #ef4444; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer; }
 
@@ -37,53 +38,48 @@
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 12px; background: #f8fafc; border-bottom: 2px solid var(--border); }
   td { padding: 12px; border-bottom: 1px solid var(--border); }
+  
+  .badge-transfer { background: var(--warning); color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<div id="loader">🔄 Syncing Dynamic Interface...</div>
+<div id="loader">🔄 Loading Transfer Module...</div>
 
 <div class="app" id="mainApp">
   <aside>
     <div class="card" style="height: 90vh; overflow-y: auto;">
       <h3 style="color:var(--primary); margin-top:0;">⚙️ Master Settings</h3>
-      
-      <div class="config-section">
-        <p><b>1. Wallets</b></p>
-        <div id="accList"></div>
-        <input id="newAccName" placeholder="Bank/Cash Name">
-        <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ Add Wallet</button>
-      </div>
+      <div id="accList"></div>
+      <input id="newAccName" placeholder="Bank/Cash Name">
+      <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ Add Wallet</button>
 
-      <div class="config-section">
-        <p><b>2. Categories</b></p>
-        <div id="catList"></div>
-        <input id="newCatName" placeholder="Salary, Rent, etc.">
-        <button class="btn" style="background:var(--primary); color:white" onclick="addItem('categories', 'newCatName')">+ Add Category</button>
-      </div>
+      <p><b>Categories</b></p>
+      <div id="catList"></div>
+      <input id="newCatName" placeholder="Salary, Rent, etc.">
+      <button class="btn" style="background:var(--primary); color:white" onclick="addItem('categories', 'newCatName')">+ Add Category</button>
 
-      <div class="config-section">
-        <p><b>3. Global Form Fields</b></p>
-        <div id="fieldList"></div>
-        <input id="newFieldName" placeholder="Field Name">
-        <select id="newFieldType">
-          <option value="text">Text</option><option value="number">Number</option><option value="date">Date</option>
-        </select>
-        <button class="btn" style="background:var(--primary); color:white" onclick="addField()">+ Create Field</button>
-      </div>
+      <p><b>Form Fields</b></p>
+      <div id="fieldList"></div>
+      <input id="newFieldName" placeholder="Field Name">
+      <select id="newFieldType">
+        <option value="text">Text</option><option value="number">Number</option><option value="date">Date</option>
+      </select>
+      <button class="btn" style="background:var(--primary); color:white" onclick="addField()">+ Create Field</button>
     </div>
   </aside>
 
   <div class="main">
     <div id="walletGrid"></div>
-    <div class="card" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
-      <div style="height: 250px;"><canvas id="barChart"></canvas></div>
-      <div style="height: 250px;"><canvas id="pieChart"></canvas></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div class="card" style="height: 220px; margin-bottom:0;"><canvas id="barChart"></canvas></div>
+      <div class="card" style="height: 220px; margin-bottom:0;"><canvas id="pieChart"></canvas></div>
+      <div class="card" style="height: 220px; margin-bottom:0;"><canvas id="growthChart"></canvas></div>
     </div>
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3>Transaction History</h3>
-        <input id="searchInp" placeholder="Search history..." oninput="renderHistory()" style="width:180px; margin:0">
+        <input id="searchInp" placeholder="Search..." oninput="renderHistory()" style="width:200px; margin:0">
       </div>
       <div style="overflow-x:auto">
         <table><thead id="tableHead"></thead><tbody id="txBody"></tbody></table>
@@ -96,26 +92,33 @@
       <h3>Add New Record</h3>
       
       <label><b>Transaction Type</b></label>
-      <select id="txType">
+      <select id="txType" onchange="toggleTransferUI()">
         <option value="Credit">➕ CREDIT</option>
         <option value="Debit">➖ DEBIT</option>
+        <option value="Transfer">🔄 TRANSFER</option>
       </select>
 
-      <label><b>Wallet</b></label>
-      <select id="accSelect"></select>
+      <div id="standardAccountUI">
+        <label><b>Wallet</b></label>
+        <select id="accSelect"></select>
+      </div>
 
-      <label><b>Category</b></label>
-      <select id="catSelect"></select>
+      <div id="transferUI" style="display:none; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid var(--warning); margin-bottom: 12px;">
+        <label><b>From (Gaye)</b></label>
+        <select id="accFrom"></select>
+        <label><b>To (Aaye)</b></label>
+        <select id="accTo"></select>
+      </div>
+
+      <div id="categoryUI">
+        <label><b>Category</b></label>
+        <select id="catSelect"></select>
+      </div>
 
       <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-      
-      <label><b>Select Fields to Fill</b></label>
-      <select id="fieldSelector" onchange="attachField()">
-        <option value="">-- Click to add a field --</option>
-      </select>
-
-      <div id="dynamicFormContainer" style="margin-top:10px;">
-        </div>
+      <label><b>Fields</b></label>
+      <select id="fieldSelector" onchange="attachField()"></select>
+      <div id="dynamicFormContainer"></div>
 
       <button class="btn btn-save" onclick="saveTransaction()">Save Transaction</button>
     </div>
@@ -125,26 +128,23 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwjwSeS7svH3Rz_bQ6kfTrvw3oJIgGOy2m_saj_0TmoU6zkSUpk7mZI60aPsYtwmAIO/exec"; 
 let CLOUD_DATA = { accounts:[], categories:[], fields:[], txs:[] };
-let activeFields = new Set(); 
-let charts = { bar: null, pie: null };
+let activeFields = new Set();
+let charts = { bar: null, pie: null, growth: null };
 
 async function init() {
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
     for(let k in data) { try { CLOUD_DATA[k] = JSON.parse(data[k]); } catch(e) { CLOUD_DATA[k] = data[k]; } }
-    
-    // Default config if empty
     if(!CLOUD_DATA.fields || CLOUD_DATA.fields.length === 0) {
-      CLOUD_DATA.fields = [{name:'Date', type:'date'}, {name:'Amount', type:'number'}];
+      CLOUD_DATA.fields = [{name:'Date', type:'date'}, {name:'Amount', type:'number'}, {name:'Note', type:'text'}];
       CLOUD_DATA.accounts = ['HDFC Bank', 'Cash'];
-      CLOUD_DATA.categories = ['Salary', 'Grocery'];
+      CLOUD_DATA.categories = ['Salary', 'Transfer', 'Grocery'];
     }
-    
     refreshUI();
     document.getElementById('loader').style.display = 'none';
     document.getElementById('mainApp').style.display = 'grid';
-  } catch(e) { alert("Connect Google Script URL first!"); }
+  } catch(e) { alert("Script URL Error!"); }
 }
 
 async function sync(key, value) {
@@ -152,99 +152,51 @@ async function sync(key, value) {
   await fetch(API_URL, { method:'POST', body:JSON.stringify({key, data:JSON.stringify(value)}) });
 }
 
-// Sidebar Logic
-async function addItem(key, inpId) {
-  const val = document.getElementById(inpId).value.trim();
-  if(!val) return;
-  CLOUD_DATA[key].push(val);
-  await sync(key, CLOUD_DATA[key]);
-  document.getElementById(inpId).value = '';
-  refreshUI();
-}
-
-async function deleteItem(key, idx) {
-  if(!confirm("Delete?")) return;
-  CLOUD_DATA[key].splice(idx, 1);
-  await sync(key, CLOUD_DATA[key]);
-  refreshUI();
-}
-
-async function addField() {
-  const name = document.getElementById('newFieldName').value.trim();
-  const type = document.getElementById('newFieldType').value;
-  if(!name) return;
-  CLOUD_DATA.fields.push({name, type});
-  await sync('fields', CLOUD_DATA.fields);
-  document.getElementById('newFieldName').value = '';
-  refreshUI();
-}
-
-// Right Side Logic (Dropdown Fields)
-function attachField() {
-  const sel = document.getElementById('fieldSelector');
-  const fieldName = sel.value;
-  if(!fieldName || activeFields.has(fieldName)) return;
-
-  activeFields.add(fieldName);
-  const fieldObj = CLOUD_DATA.fields.find(f => f.name === fieldName);
-  
-  const container = document.getElementById('dynamicFormContainer');
-  const div = document.createElement('div');
-  div.className = 'field-row';
-  div.id = `row_${fieldName.replace(/\s/g, '_')}`;
-  div.innerHTML = `
-    <span class="field-del" onclick="detachField('${fieldName}')">✖ Remove</span>
-    <label style="font-size:12px; font-weight:700">${fieldName}</label>
-    <input type="${fieldObj.type}" id="input_${fieldName.replace(/\s/g, '_')}" placeholder="Enter ${fieldName}">
-  `;
-  container.appendChild(div);
-  sel.value = ""; // reset dropdown
-}
-
-function detachField(name) {
-  activeFields.delete(name);
-  const row = document.getElementById(`row_${name.replace(/\s/g, '_')}`);
-  if(row) row.remove();
+function toggleTransferUI() {
+  const type = document.getElementById('txType').value;
+  document.getElementById('standardAccountUI').style.display = (type === 'Transfer') ? 'none' : 'block';
+  document.getElementById('categoryUI').style.display = (type === 'Transfer') ? 'none' : 'block';
+  document.getElementById('transferUI').style.display = (type === 'Transfer') ? 'block' : 'none';
 }
 
 function refreshUI() {
-  // Sidebar
   document.getElementById('accList').innerHTML = CLOUD_DATA.accounts.map((a,i)=>`<div class="config-item">${a}<button class="btn-del-sm" onclick="deleteItem('accounts',${i})">×</button></div>`).join('');
   document.getElementById('catList').innerHTML = CLOUD_DATA.categories.map((c,i)=>`<div class="config-item">${c}<button class="btn-del-sm" onclick="deleteItem('categories',${i})">×</button></div>`).join('');
   document.getElementById('fieldList').innerHTML = CLOUD_DATA.fields.map((f,i)=>`<div class="config-item">${f.name}<button class="btn-del-sm" onclick="deleteItem('fields',${i})">×</button></div>`).join('');
-
-  // Dropdowns (Wallets, Categories, Field Selector)
-  document.getElementById('accSelect').innerHTML = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
+  
+  const accOpts = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
+  document.getElementById('accSelect').innerHTML = accOpts;
+  document.getElementById('accFrom').innerHTML = accOpts;
+  document.getElementById('accTo').innerHTML = accOpts;
   document.getElementById('catSelect').innerHTML = CLOUD_DATA.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
-  document.getElementById('fieldSelector').innerHTML = '<option value="">-- Add a Field --</option>' + 
-    CLOUD_DATA.fields.map(f=>`<option value="${f.name}">${f.name}</option>`).join('');
-
+  document.getElementById('fieldSelector').innerHTML = '<option value="">-- Add Field --</option>' + CLOUD_DATA.fields.map(f=>`<option value="${f.name}">${f.name}</option>`).join('');
   renderWallets();
   renderHistory();
 }
 
 async function saveTransaction() {
-  let entry = { 
-    id: Date.now(), 
-    _type: document.getElementById('txType').value, 
-    _acc: document.getElementById('accSelect').value, 
-    _cat: document.getElementById('catSelect').value 
-  };
+  const type = document.getElementById('txType').value;
+  let entry = { id: Date.now(), _type: type };
   
-  let hasAmount = false;
-  activeFields.forEach(fieldName => {
-    const inputId = `input_${fieldName.replace(/\s/g, '_')}`;
-    const val = document.getElementById(inputId).value;
-    entry[fieldName] = val;
-    if(fieldName.toLowerCase() === 'amount' && val) hasAmount = true;
+  if(type === 'Transfer') {
+    entry._accFrom = document.getElementById('accFrom').value;
+    entry._accTo = document.getElementById('accTo').value;
+    entry._cat = "Transfer";
+    if(entry._accFrom === entry._accTo) return alert("Source and Destination cannot be same!");
+  } else {
+    entry._acc = document.getElementById('accSelect').value;
+    entry._cat = document.getElementById('catSelect').value;
+  }
+
+  activeFields.forEach(f => {
+    const inputId = `input_${f.replace(/\s/g, '_')}`;
+    entry[f] = document.getElementById(inputId).value;
   });
 
-  if(!hasAmount) return alert("Please select and fill the 'Amount' field!");
+  if(!entry.Amount) return alert("Amount is required!");
 
   CLOUD_DATA.txs.unshift(entry);
   await sync('txs', CLOUD_DATA.txs);
-  
-  // Clear entry form
   document.getElementById('dynamicFormContainer').innerHTML = '';
   activeFields.clear();
   refreshUI();
@@ -257,61 +209,53 @@ function renderWallets() {
 
   CLOUD_DATA.txs.forEach(t => {
     const amt = parseFloat(t.Amount) || 0;
-    const date = t.Date || '2025-01-01';
-    const m = date.slice(0,7);
+    const m = (t.Date || '2025-01').slice(0,7);
     if(!monthMap[m]) monthMap[m] = {c:0, d:0};
 
-    if(t._type === 'Credit') {
-      if(bals.hasOwnProperty(t._acc)) bals[t._acc] += amt;
-      tC += amt; monthMap[m].c += amt;
-    } else {
-      if(bals.hasOwnProperty(t._acc)) bals[t._acc] -= amt;
-      tD += amt; monthMap[m].d += amt;
-    }
+    if(t._type === 'Credit') { bals[t._acc]+=amt; tC+=amt; monthMap[m].c+=amt; }
+    else if(t._type === 'Debit') { bals[t._acc]-=amt; tD+=amt; monthMap[m].d+=amt; }
+    else if(t._type === 'Transfer') { bals[t._accFrom]-=amt; bals[t._accTo]+=amt; }
   });
 
-  for(let a in bals) grid.innerHTML += `<div class="w-card"><div style="font-size:10px; color:var(--muted); font-weight:700;">${a}</div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`;
+  for(let a in bals) grid.innerHTML += `<div class="w-card"><div style="font-size:10px; color:#64748b; font-weight:700;">${a}</div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`;
   updateCharts(monthMap, tC, tD);
 }
 
 function renderHistory() {
   const search = document.getElementById('searchInp').value.toLowerCase();
   const allFields = CLOUD_DATA.fields.map(f=>f.name);
-  
-  document.getElementById('tableHead').innerHTML = `<tr><th>Type</th><th>Wallet</th><th>Category</th>${allFields.map(f=>`<th>${f}</th>`).join('')}<th>Action</th></tr>`;
+  document.getElementById('tableHead').innerHTML = `<tr><th>Type</th><th>Account Detail</th><th>Category</th>${allFields.map(f=>`<th>${f}</th>`).join('')}<th>Action</th></tr>`;
   const body = document.getElementById('txBody'); body.innerHTML = '';
   
   CLOUD_DATA.txs.forEach(t => {
     if(JSON.stringify(t).toLowerCase().includes(search)) {
-      let row = `<tr>
-        <td style="font-weight:bold; color:${t._type==='Credit'?'#10b981':'#ef4444'}">${t._type}</td>
-        <td>${t._acc}</td>
-        <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px;">${t._cat}</span></td>
+      let rowClass = t._type === 'Credit' ? 'row-credit' : (t._type === 'Debit' ? 'row-debit' : 'row-transfer');
+      let accDetail = t._type === 'Transfer' ? `${t._accFrom} ➔ ${t._accTo}` : t._acc;
+      body.innerHTML += `<tr class="${rowClass}">
+        <td style="font-weight:bold;">${t._type === 'Transfer' ? '🔄 Transfer' : t._type}</td>
+        <td>${accDetail}</td><td>${t._cat}</td>
         ${allFields.map(f => `<td>${t[f] || '-'}</td>`).join('')}
         <td><button onclick="deleteTx(${t.id})" style="color:red; background:none; border:none; cursor:pointer;">Del</button></td></tr>`;
-      body.innerHTML += row;
     }
   });
 }
 
+// Reuse existing helper functions (addItem, deleteItem, addField, attachField, detachField, deleteTx, updateCharts) from previous code...
+async function addItem(key, inpId) { const val = document.getElementById(inpId).value.trim(); if(!val) return; CLOUD_DATA[key].push(val); await sync(key, CLOUD_DATA[key]); document.getElementById(inpId).value = ''; refreshUI(); }
+async function deleteItem(key, idx) { if(!confirm("Delete?")) return; CLOUD_DATA[key].splice(idx, 1); await sync(key, CLOUD_DATA[key]); refreshUI(); }
+async function addField() { const name = document.getElementById('newFieldName').value.trim(); const type = document.getElementById('newFieldType').value; if(!name) return; CLOUD_DATA.fields.push({name, type}); await sync('fields', CLOUD_DATA.fields); document.getElementById('newFieldName').value = ''; refreshUI(); }
+function attachField() { const sel = document.getElementById('fieldSelector'); const fieldName = sel.value; if(!fieldName || activeFields.has(fieldName)) return; activeFields.add(fieldName); const fieldObj = CLOUD_DATA.fields.find(f => f.name === fieldName); const container = document.getElementById('dynamicFormContainer'); const div = document.createElement('div'); div.className = 'field-row'; div.id = `row_${fieldName.replace(/\s/g, '_')}`; div.innerHTML = `<span class="field-del" onclick="detachField('${fieldName}')">✖</span><label style="font-size:11px; font-weight:700">${fieldName}</label><input type="${fieldObj.type}" id="input_${fieldName.replace(/\s/g, '_')}">`; container.appendChild(div); sel.value = ""; }
+function detachField(name) { activeFields.delete(name); document.getElementById(`row_${name.replace(/\s/g, '_')}`).remove(); }
 async function deleteTx(id) { if(confirm("Delete?")) { CLOUD_DATA.txs = CLOUD_DATA.txs.filter(t=>t.id!==id); await sync('txs', CLOUD_DATA.txs); refreshUI(); } }
-
 function updateCharts(months, tc, td) {
   const labels = Object.keys(months).sort();
   if(charts.bar) charts.bar.destroy();
-  charts.bar = new Chart(document.getElementById('barChart'), {
-    type:'bar',
-    data: { labels, datasets: [{label:'Credit', data:labels.map(l=>months[l].c), backgroundColor:'#10b981'}, {label:'Debit', data:labels.map(l=>months[l].d), backgroundColor:'#ef4444'}]},
-    options: { responsive:true, maintainAspectRatio:false }
-  });
+  charts.bar = new Chart(document.getElementById('barChart'), { type:'bar', data: { labels, datasets: [{label:'Credit', data:labels.map(l=>months[l].c), backgroundColor:'#10b981'}, {label:'Debit', data:labels.map(l=>months[l].d), backgroundColor:'#ef4444'}]}, options: { responsive:true, maintainAspectRatio:false } });
   if(charts.pie) charts.pie.destroy();
-  charts.pie = new Chart(document.getElementById('pieChart'), {
-    type:'doughnut',
-    data: { labels:['Credit','Debit'], datasets:[{data:[tc, td], backgroundColor:['#10b981','#ef4444']}]},
-    options: { responsive:true, maintainAspectRatio:false }
-  });
+  charts.pie = new Chart(document.getElementById('pieChart'), { type:'doughnut', data: { labels:['Credit','Debit'], datasets:[{data:[tc, td], backgroundColor:['#10b981','#ef4444']}]}, options: { responsive:true, maintainAspectRatio:false } });
+  if(charts.growth) charts.growth.destroy();
+  charts.growth = new Chart(document.getElementById('growthChart'), { type:'line', data: { labels, datasets: [{label:'Net Savings', data:labels.map(l=>months[l].c - months[l].d), borderColor:'#2563eb', tension:0.3, fill:true, backgroundColor:'rgba(37,99,235,0.1)'}]}, options: { responsive:true, maintainAspectRatio:false } });
 }
-
 init();
 </script>
 </body>
