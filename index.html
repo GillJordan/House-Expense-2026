@@ -218,7 +218,6 @@ function calculateMetrics(netSavings, txs) {
   }, 30); 
 }
 
-// --- CLEAN IST TIME FIX (HIDDEN CHARACTER) ---
 async function saveTransaction() {
   const type = document.getElementById('txType').value;
   const editId = document.getElementById('editId').value;
@@ -230,7 +229,6 @@ async function saveTransaction() {
   const timeStr = now.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase();
   const d = dateStr.split('-');
   
-  // Invisible Space (\u200B) trick to stop Google Sheets from auto-formatting
   const cleanIST = `${d[2]}/${d[1]}/${d[0]}\u200B ${timeStr}`;
 
   let entry = { 
@@ -252,8 +250,12 @@ async function saveTransaction() {
   if(editId) { 
     const idx=CLOUD_DATA.txs.findIndex(t=>t.id===parseInt(editId)); 
     CLOUD_DATA.txs[idx]=entry; 
-    cancelEdit(); 
-  } else { CLOUD_DATA.txs.unshift(entry); setDefaultDate(); }
+  } else { 
+    CLOUD_DATA.txs.unshift(entry); 
+  }
+  
+  // RESET FIELDS AFTER SAVING
+  cancelEdit(); 
   
   await sync('txs', CLOUD_DATA.txs); 
   refreshUI();
@@ -280,7 +282,6 @@ function renderHistory() {
   });
 }
 
-// OTHER HELPER FUNCTIONS (SAME)
 function editTx(id) {
   const tx = CLOUD_DATA.txs.find(t => t.id === id); if(!tx) return;
   document.getElementById('editId').value = tx.id; document.getElementById('f_Date').value = tx.Date;
@@ -293,11 +294,13 @@ function editTx(id) {
   document.getElementById('formTitle').innerText = "✏️ Edit Record"; document.getElementById('btnSubmit').innerText = "Update Record";
   document.getElementById('btnCancel').style.display = "block"; window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 function cancelEdit() {
   document.getElementById('editId').value = ""; document.getElementById('formTitle').innerText = "New Entry";
   document.getElementById('btnSubmit').innerText = "Save Transaction"; document.getElementById('btnCancel').style.display = "none";
   ['f_Amount', 'f_Product', 'f_Quantity', 'f_By', 'f_From', 'f_For'].forEach(i => document.getElementById(i).value = ""); setDefaultDate();
 }
+
 function refreshUI() {
   const accOpts = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
   document.getElementById('accList').innerHTML = CLOUD_DATA.accounts.map((a,i)=>`<div class="config-item"><span>${a}</span><div class="action-btns"><button class="btn-edit-sm" onclick="editWallet(${i})">✎</button><button class="btn-del-sm" onclick="deleteItem('accounts',${i})">×</button></div></div>`).join('');
@@ -306,14 +309,17 @@ function refreshUI() {
   datalist.innerHTML = [...new Set(CLOUD_DATA.txs.map(t => t.Product).filter(p => p))].map(p => `<option value="${p}">`).join('');
   renderWallets(); renderHistory();
 }
+
 async function editWallet(idx) {
   const oldN = CLOUD_DATA.accounts[idx]; const newN = prompt("New name?", oldN);
   if(newN && newN!==oldN) { CLOUD_DATA.accounts[idx] = newN; CLOUD_DATA.txs.forEach(t => { if(t._acc===oldN) t._acc=newN; if(t._accFrom===oldN) t._accFrom=newN; if(t._accTo===oldN) t._accTo=newN; }); await sync('accounts', CLOUD_DATA.accounts); await sync('txs', CLOUD_DATA.txs); refreshUI(); }
 }
+
 function toggleForm() { const type = document.getElementById('txType').value; document.getElementById('normalAcc').style.display = type==='Transfer'?'none':'block'; document.getElementById('transferAcc').style.display = type==='Transfer'?'block':'none'; }
 async function addItem(k, i) { const v=document.getElementById(i).value; if(!v)return; CLOUD_DATA[k].push(v); await sync(k, CLOUD_DATA[k]); document.getElementById(i).value=''; refreshUI(); }
 async function deleteItem(k, idx) { if(confirm("Delete?")) { CLOUD_DATA[k].splice(idx,1); await sync(k, CLOUD_DATA[k]); refreshUI(); } }
 async function deleteTx(id) { if(confirm("Delete?")) { CLOUD_DATA.txs=CLOUD_DATA.txs.filter(t=>t.id!==id); await sync('txs',CLOUD_DATA.txs); refreshUI(); } }
+
 function updateCharts(m) {
   const l=Object.keys(m).sort(); if(l.length === 0) return;
   if(charts.bar)charts.bar.destroy(); charts.bar=new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:l,datasets:[{label:'In',data:l.map(x=>m[x].c),backgroundColor:'#10b981'},{label:'Out',data:l.map(x=>m[x].d),backgroundColor:'#ef4444'}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});
