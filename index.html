@@ -7,47 +7,47 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; --primary: #2563eb; 
-    --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --border: #e2e8f0; --radius: 12px;
+    --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --primary: #2563eb; 
+    --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --border: #e2e8f0; --radius: 14px;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --hover-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
-  body { margin:0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 15px; }
-  .app { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; display:none; }
-  
-  aside .card { height: 92vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 5px; }
+  body { margin:0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+  .app { max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 280px 1fr 320px; gap: 24px; display:none; }
+  aside .card { height: 90vh; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+  .card, .w-card, .runway-card, .health-card, .saving-summary-card { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; cursor: default; }
+  .card:hover, .w-card:hover, .runway-card:hover, .health-card:hover, .saving-summary-card:hover { transform: scale(1.02); box-shadow: var(--hover-shadow); z-index: 10; }
   .config-section { margin-bottom: 25px; }
-  .config-section p { margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
-  .config-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border); }
-  .btn-del-sm { background: #fee2e2; color: #ef4444; border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-
-  .stats-header { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 20px; }
-  .runway-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 20px; border-radius: var(--radius); }
-  .runway-val { font-size: 32px; font-weight: 800; color: #fbbf24; margin: 5px 0; }
-  .runway-bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; }
-  .runway-bar-fill { height: 100%; background: #fbbf24; border-radius: 10px; transition: 1s; width: 0%; }
-
-  .health-card { background: white; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-  .score-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; border: 5px solid #e2e8f0; margin-bottom: 8px; transition: 0.5s; }
-  .score-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-
-  #walletGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-  .w-card { background: var(--card); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border); }
-  .w-val { font-size: 18px; font-weight: 800; color: var(--primary); }
-  .card { background: var(--card); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-  
-  input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; font-size: 13px; box-sizing: border-box; }
-  label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 4px; display: block; }
-  
-  .btn { cursor: pointer; padding: 10px; border-radius: 8px; border: none; font-weight: 700; width: 100%; }
-  .btn-save { background: var(--success); color: white; font-size: 16px; margin-top: 10px; height: 45px; }
-  
-  .row-credit { border-left: 5px solid var(--success); background: #f0fdf4 !important; }
-  .row-debit { border-left: 5px solid var(--danger); background: #fef2f2 !important; }
-  .row-transfer { border-left: 5px solid var(--warning); background: #fffbeb !important; }
-
+  .config-section p { margin: 0 0 12px 0; font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .config-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f1f5f9; border-radius: 10px; margin-bottom: 10px; font-size: 14px; border: 1px solid var(--border); }
+  .action-btns { display: flex; gap: 6px; }
+  .btn-edit-sm, .btn-del-sm { width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 12px; border:none; transition: 0.2s; }
+  .btn-edit-sm { background: #dbeafe; color: #2563eb; }
+  .btn-del-sm { background: #fee2e2; color: #ef4444; }
+  .stats-header { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .runway-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 24px; border-radius: var(--radius); }
+  .runway-val { font-size: 36px; font-weight: 800; color: #fbbf24; margin: 8px 0; }
+  .runway-bar-bg { height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 20px; overflow:hidden; }
+  .runway-bar-fill { height: 100%; background: #fbbf24; border-radius: 10px; transition: 1.5s ease; width: 0%; }
+  .health-card { background: white; padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .score-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; border: 6px solid #f1f5f9; margin-bottom: 10px; transition: 0.5s; }
+  #walletGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .saving-summary-card { grid-column: 1 / -1; background: linear-gradient(90deg, #eff6ff 0%, #ffffff 100%); border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; border-radius: var(--radius); margin-bottom: 8px; }
+  .w-card { background: var(--card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); }
+  .w-val { font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 8px; }
+  .card { background: var(--card); border-radius: var(--radius); padding: 24px; border: 1px solid var(--border); margin-bottom: 24px; }
+  input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 14px; font-size: 14px; box-sizing: border-box; background: #fcfdfe; transition: 0.2s; }
+  input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+  label { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px; display: block; }
+  .btn { cursor: pointer; padding: 12px; border-radius: 10px; border: none; font-weight: 700; width: 100%; transition: 0.3s; }
+  .btn-save { background: var(--primary); color: white; font-size: 16px; margin-top: 10px; height: 50px; }
   #loader { position: fixed; inset: 0; background: white; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; }
-  table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  th { text-align: left; padding: 10px; background: #f8fafc; color: #64748b; border-bottom: 2px solid var(--border); }
-  td { padding: 10px; border-bottom: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; padding: 14px; background: #f8fafc; color: #64748b; border-bottom: 2px solid var(--border); }
+  td { padding: 14px; border-bottom: 1px solid var(--border); }
+  .bg-credit { background-color: #f0fdf4 !important; } 
+  .bg-debit { background-color: #fef2f2 !important; }  
+  .bg-transfer { background-color: #fffbeb !important; }
 </style>
 </head>
 <body>
@@ -57,12 +57,12 @@
 <div class="app" id="mainApp">
   <aside>
     <div class="card">
-      <h2 style="color:var(--primary); margin:0 0 20px 0; font-size: 18px;">⚙️ Settings</h2>
+      <h2 style="color:var(--primary); margin:0 0 24px 0; font-size: 20px;">⚙️ Settings</h2>
       <div class="config-section">
-        <p>WALLETS</p>
+        <p>Your Wallets</p>
         <div id="accList"></div>
-        <input id="newAccName" placeholder="Bank or Wallet">
-        <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ Add Wallet</button>
+        <input id="newAccName" placeholder="Bank or Wallet Name">
+        <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ New Wallet</button>
       </div>
     </div>
   </aside>
@@ -70,42 +70,42 @@
   <div class="main">
     <div class="stats-header">
       <div class="runway-card">
-        <div style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">SURVIVAL RUNWAY</div>
-        <div class="runway-val" id="runwayValue">Analyzing...</div>
-        <div id="runwayDetail" style="font-size: 11px; opacity: 0.7;">Waiting...</div>
+        <div style="font-size: 12px; opacity: 0.7; letter-spacing: 1px; font-weight: 700;">SURVIVAL RUNWAY</div>
+        <div class="runway-val" id="runwayValue">0 Days</div>
+        <div id="runwayDetail" style="font-size: 12px; opacity: 0.6;">Analyzing habits...</div>
         <div class="runway-bar-bg"><div class="runway-bar-fill" id="runwayBar"></div></div>
       </div>
       <div class="health-card">
-        <div class="score-label">Health Score</div>
-        <div class="score-circle" id="scoreCircle">--</div>
-        <div id="scoreStatus" style="font-size: 13px; font-weight: 700; color: #64748b;">Waiting...</div>
+        <div class="score-label" style="font-size: 12px; font-weight: 800; color: #94a3b8; margin-bottom: 8px;">FINANCIAL HEALTH</div>
+        <div class="score-circle" id="scoreCircle">0</div>
+        <div id="scoreStatus" style="font-size: 14px; font-weight: 800;">Waiting...</div>
       </div>
     </div>
 
     <div id="walletGrid"></div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-      <div class="card" style="height: 180px; margin:0;"><canvas id="barChart"></canvas></div>
-      <div class="card" style="height: 180px; margin:0;"><canvas id="pieChart"></canvas></div>
-      <div class="card" style="height: 180px; margin:0;"><canvas id="growthChart"></canvas></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+      <div class="card" style="height: 200px; margin:0;"><canvas id="barChart"></canvas></div>
+      <div class="card" style="height: 200px; margin:0;"><canvas id="pieChart"></canvas></div>
+      <div class="card" style="height: 200px; margin:0;"><canvas id="growthChart"></canvas></div>
     </div>
 
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3>History</h3>
-        <input id="searchInp" placeholder="🔍 Search records..." oninput="renderHistory()" style="width:180px; margin:0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="margin:0">Recent Transactions</h3>
+        <input id="searchInp" placeholder="🔍 Search records..." oninput="renderHistory()" style="width:220px; margin:0; padding:8px 12px;">
       </div>
       <div style="overflow-x:auto">
         <table>
           <thead>
             <tr>
-              <th>Date</th>
+              <th>Date & Time (IST)</th>
               <th>Type</th>
               <th>Wallet</th>
               <th>Product</th>
               <th>Qty</th>
               <th>Amount</th>
-              <th>From / By / For</th>
+              <th>Info</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -117,242 +117,229 @@
 
   <div class="right-col">
     <div class="card">
-      <h3 style="margin-top:0; color:var(--primary);">Entry Form</h3>
-      
-      <label>DATE</label>
-      <input type="date" id="f_Date">
-
-      <label>AMOUNT</label>
-      <input type="number" id="f_Amount" placeholder="₹ 0.00">
-
-      <label>PRODUCT</label>
-      <input type="text" id="f_Product" list="productSuggestions" placeholder="Product Name">
+      <h3 id="formTitle" style="margin-top:0; color:var(--primary);">New Entry</h3>
+      <input type="hidden" id="editId">
+      <label>DATE</label> <input type="date" id="f_Date">
+      <label>AMOUNT</label> <input type="number" id="f_Amount" placeholder="0.00">
+      <label>PRODUCT</label> <input type="text" id="f_Product" list="productSuggestions" placeholder="What?">
       <datalist id="productSuggestions"></datalist>
-
-      <label>QUANTITY</label>
-      <input type="text" id="f_Quantity" placeholder="Quantity">
-
-      <label>BY</label>
-      <input type="text" id="f_By" placeholder="BY">
-
-      <label>FROM</label>
-      <input type="text" id="f_From" placeholder="Source">
-
-      <label>FOR</label>
-      <input type="text" id="f_For" placeholder="Purpose">
-
-      <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
-
+      <label>QUANTITY</label> <input type="text" id="f_Quantity" placeholder="Quantity">
+      <label>BY</label> <input type="text" id="f_By">
+      <label>From</label> <input type="text" id="f_From">
+      <label>For</label> <input type="text" id="f_For">
+      <hr style="border:0; border-top:1px solid #f1f5f9; margin:15px 0;">
       <label>TRANSACTION TYPE</label>
       <select id="txType" onchange="toggleForm()">
-        <option value="Debit">➖ DEBIT (Expense)</option>
-        <option value="Credit">➕ CREDIT (Income)</option>
-        <option value="Transfer">🔄 TRANSFER</option>
+        <option value="Debit">➖ Expense (Debit)</option>
+        <option value="Credit">➕ Income (Credit)</option>
+        <option value="Transfer">🔄 Transfer</option>
       </select>
-
       <div id="normalAcc">
-        <label>WALLET</label>
-        <select id="accSelect"></select>
+        <label>WALLET</label> <select id="accSelect"></select>
       </div>
-
-      <div id="transferAcc" style="display:none; background:#fffbeb; padding:10px; border-radius:8px; margin-bottom:12px;">
-        <label>From Wallet</label><select id="accFrom"></select>
-        <label>To Wallet</label><select id="accTo"></select>
+      <div id="transferAcc" style="display:none; background:#fffbeb; padding:15px; border-radius:12px; margin-bottom:14px; border: 1px solid #fef3c7;">
+        <label>From</label><select id="accFrom"></select>
+        <label>To</label><select id="accTo"></select>
       </div>
-
-      <button class="btn btn-save" onclick="saveTransaction()">Save Record</button>
+      <button id="btnSubmit" class="btn btn-save" onclick="saveTransaction()">Save Transaction</button>
+      <button id="btnCancel" class="btn btn-cancel" style="background:#f1f5f9; color:#64748b; margin-top:8px; display:none;" onclick="cancelEdit()">Cancel Edit</button>
     </div>
   </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwjwSeS7svH3Rz_bQ6kfTrvw3oJIgGOy2m_saj_0TmoU6zkSUpk7mZI60aPsYtwmAIO/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbzOPoVZCuNgcXi1c1IERndY5Liuis_RBIPgUkroyH0dKUDDk8PTeyHovVKReaa5mdNN/exec"; 
 let CLOUD_DATA = { accounts:[], txs:[] };
 let charts = { bar: null, pie: null, growth: null };
+let currentDisplayScore = 0; 
 
 async function init() {
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
     for(let k in data) { try { CLOUD_DATA[k] = JSON.parse(data[k]); } catch(e) { CLOUD_DATA[k] = data[k]; } }
-    
-    if(!CLOUD_DATA.accounts || CLOUD_DATA.accounts.length === 0) {
-      CLOUD_DATA.accounts = ['Cash', 'Main Bank'];
-      CLOUD_DATA.txs = [];
-    }
-
-    setDefaultDate();
-    refreshUI();
+    if(!CLOUD_DATA.accounts || CLOUD_DATA.accounts.length === 0) { CLOUD_DATA.accounts = ['Cash', 'Bank']; CLOUD_DATA.txs = []; }
+    setDefaultDate(); refreshUI();
     document.getElementById('loader').style.display = 'none';
     document.getElementById('mainApp').style.display = 'grid';
-  } catch(e) { alert("Check API Connection."); }
+  } catch(e) { console.error(e); }
 }
 
-function setDefaultDate() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('f_Date').value = today;
-}
-
-async function sync(key, value) {
-  CLOUD_DATA[key] = value;
-  await fetch(API_URL, { method:'POST', body:JSON.stringify({key, data:JSON.stringify(value)}) });
-}
-
-// Function to update suggestions based on history
-function updateSuggestions() {
-    const datalist = document.getElementById('productSuggestions');
-    const uniqueProducts = [...new Set(CLOUD_DATA.txs.map(t => t.Product).filter(p => p))];
-    datalist.innerHTML = uniqueProducts.map(p => `<option value="${p}">`).join('');
-}
-
-function updateHealthAndRunway(netWorth, txs) {
-  const debits = txs.filter(t => t._type === 'Debit' && t.Amount).sort((a,b)=> new Date(b.Date) - new Date(a.Date));
-  const credits = txs.filter(t => t._type === 'Credit' && t.Amount);
-  
-  let score = 0; let runwayDays = 0;
-
-  if (debits.length >= 2 && netWorth > 0) {
-    const totalD = debits.reduce((s, t) => s + parseFloat(t.Amount), 0);
-    const daysRange = Math.max(1, (new Date(debits[0].Date) - new Date(debits[debits.length-1].Date)) / 86400000);
-    const dailyBurn = totalD / daysRange;
-    runwayDays = Math.round(netWorth / dailyBurn);
-
-    const val = document.getElementById('runwayValue');
-    const bar = document.getElementById('runwayBar');
-    if(runwayDays > 365) { val.innerText = (runwayDays/365).toFixed(1) + " Years"; bar.style.width="100%"; bar.style.backgroundColor="#10b981"; score += 50; }
-    else if(runwayDays > 30) { val.innerText = (runwayDays/30).toFixed(1) + " Months"; bar.style.width="60%"; bar.style.backgroundColor="#fbbf24"; score += 30; }
-    else { val.innerText = runwayDays + " Days"; bar.style.width="20%"; bar.style.backgroundColor="#ef4444"; score += 10; }
-    document.getElementById('runwayDetail').innerText = `Daily Burn: ₹${Math.round(dailyBurn)}`;
-  }
-
-  const totalIncome = credits.reduce((s, t) => s + parseFloat(t.Amount), 0);
-  const totalExpense = debits.reduce((s, t) => s + parseFloat(t.Amount), 0);
-  if(totalIncome > 0) {
-    const savingsRate = ((totalIncome - totalExpense) / totalIncome) * 100;
-    if(savingsRate > 40) score += 50; else if(savingsRate > 20) score += 30; else if(savingsRate > 0) score += 10;
-  }
-
-  const circle = document.getElementById('scoreCircle');
-  const status = document.getElementById('scoreStatus');
-  circle.innerText = score;
-  if(score >= 80) { circle.style.borderColor = "#10b981"; status.innerText = "EXCELLENT"; status.style.color="#10b981"; }
-  else if(score >= 40) { circle.style.borderColor = "#fbbf24"; status.innerText = "GOOD"; status.style.color="#fbbf24"; }
-  else { circle.style.borderColor = "#ef4444"; status.innerText = "CRITICAL"; status.style.color="#ef4444"; }
-}
+function setDefaultDate() { document.getElementById('f_Date').value = new Date().toISOString().split('T')[0]; }
+async function sync(key, value) { CLOUD_DATA[key] = value; await fetch(API_URL, { method:'POST', body:JSON.stringify({key, data:JSON.stringify(value)}) }); }
 
 function renderWallets() {
   const grid = document.getElementById('walletGrid'); grid.innerHTML = '';
-  let bals = {}; let tC=0, tD=0, net=0, monthMap={};
+  let bals = {}; let totalIncome = 0; let totalExpense = 0; let monthMap = {};
   CLOUD_DATA.accounts.forEach(a => bals[a] = 0);
   CLOUD_DATA.txs.forEach(t => {
     const amt = parseFloat(t.Amount) || 0;
-    const m = (t.Date || '2025-01').slice(0,7);
-    if(!monthMap[m]) monthMap[m] = {c:0, d:0};
-    if(t._type==='Credit'){ bals[t._acc]+=amt; tC+=amt; monthMap[m].c+=amt; }
-    else if(t._type==='Debit'){ bals[t._acc]-=amt; tD+=amt; monthMap[m].d+=amt; }
+    const m = (t.Date || '').slice(0,7);
+    if(m && !monthMap[m]) monthMap[m] = {c:0, d:0};
+    if(t._type==='Credit'){ bals[t._acc]+=amt; totalIncome+=amt; if(m) monthMap[m].c+=amt; }
+    else if(t._type==='Debit'){ bals[t._acc]-=amt; totalExpense+=amt; if(m) monthMap[m].d+=amt; }
     else if(t._type==='Transfer'){ bals[t._accFrom]-=amt; bals[t._accTo]+=amt; }
   });
-  for(let a in bals) { net += bals[a]; grid.innerHTML += `<div class="w-card"><div style="font-size:10px;font-weight:700;color:#64748b">${a}</div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`; }
-  updateHealthAndRunway(net, CLOUD_DATA.txs);
-  updateCharts(monthMap, tC, tD);
+  const netSavings = totalIncome - totalExpense;
+  const savingsRate = totalIncome > 0 ? ((netSavings / totalIncome) * 100).toFixed(1) : 0;
+  let html = `<div class="saving-summary-card"><div><div style="font-size:12px;font-weight:800;color:#3b82f6;letter-spacing:1px;">TOTAL NET SAVINGS</div><div style="font-size:36px;font-weight:900;color:#1e3a8a;">₹${netSavings.toLocaleString()}</div></div><div style="text-align:right;background:white;padding:10px 20px;border-radius:12px;border:1px solid #dbeafe;"><div style="font-size:11px;font-weight:800;color:#64748b;">SAVINGS RATE</div><div style="font-size:24px;font-weight:900;color:#10b981;">${savingsRate}%</div></div></div>`;
+  for(let a in bals) {
+    html += `<div class="w-card"><div style="display:flex;justify-content:space-between;align-items:start;"><div style="font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:0.5px;">${a.toUpperCase()}</div><div style="width:8px;height:8px;border-radius:50%;background:${bals[a]>=0?'#10b981':'#ef4444'}"></div></div><div class="w-val">₹${bals[a].toLocaleString()}</div></div>`;
+  }
+  grid.innerHTML = html;
+  calculateMetrics(netSavings, CLOUD_DATA.txs);
+  updateCharts(monthMap);
 }
 
-function toggleForm() {
-  const type = document.getElementById('txType').value;
-  document.getElementById('normalAcc').style.display = type==='Transfer'?'none':'block';
-  document.getElementById('transferAcc').style.display = type==='Transfer'?'block':'none';
+function calculateMetrics(netSavings, txs) {
+  const totalBalance = netSavings;
+  const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const recentDebits = txs.filter(t => t._type === 'Debit' && new Date(t.Date) >= thirtyDaysAgo);
+  const monthlyBurn = recentDebits.reduce((s, t) => s + (parseFloat(t.Amount) || 0), 0);
+  const dailyBurn = monthlyBurn / 30;
+  
+  let runwayDays = 0;
+  if (dailyBurn > 0 && totalBalance > 0) {
+    runwayDays = Math.round(totalBalance / dailyBurn);
+    document.getElementById('runwayValue').innerText = runwayDays > 365 ? (runwayDays/365).toFixed(1) + " Years" : runwayDays + " Days";
+    document.getElementById('runwayDetail').innerText = `Spending ₹${Math.round(dailyBurn)}/day (Avg)`;
+    document.getElementById('runwayBar').style.width = Math.min(100, (runwayDays / 180) * 100) + "%";
+  } else {
+    runwayDays = totalBalance > 0 ? (totalBalance > 500 ? 5 : 0) : 0; 
+    document.getElementById('runwayValue').innerText = totalBalance > 0 ? "Infinite" : "0 Days";
+    document.getElementById('runwayBar').style.width = totalBalance > 0 ? "5%" : "0%";
+  }
+
+  let balPts = totalBalance > 0 ? Math.min(20, totalBalance / 50) : 0;
+  let rwyPts = Math.min(80, runwayDays * 1.33);
+  let targetScore = Math.round(balPts + rwyPts);
+
+  if(window.scoreInterval) clearInterval(window.scoreInterval);
+  window.scoreInterval = setInterval(() => {
+    if(currentDisplayScore < targetScore) currentDisplayScore++;
+    else if(currentDisplayScore > targetScore) currentDisplayScore--;
+    else clearInterval(window.scoreInterval);
+
+    const circle = document.getElementById('scoreCircle');
+    circle.innerText = currentDisplayScore;
+    circle.style.borderColor = currentDisplayScore > 70 ? '#10b981' : (currentDisplayScore > 40 ? '#fbbf24' : '#ef4444');
+    document.getElementById('scoreStatus').innerText = currentDisplayScore > 70 ? "EXCELLENT" : (currentDisplayScore > 40 ? "STABLE" : "WEAK");
+  }, 30); 
 }
 
 async function saveTransaction() {
   const type = document.getElementById('txType').value;
-  let entry = { 
-    id: Date.now(), 
-    _type: type,
-    Date: document.getElementById('f_Date').value,
-    Amount: document.getElementById('f_Amount').value,
-    Product: document.getElementById('f_Product').value,
-    Quantity: document.getElementById('f_Quantity').value,
-    By: document.getElementById('f_By').value,
-    From: document.getElementById('f_From').value,
-    For: document.getElementById('f_For').value
-  };
+  const editId = document.getElementById('editId').value;
+  const amt = parseFloat(document.getElementById('f_Amount').value);
+  const dateStr = document.getElementById('f_Date').value;
+  if(!amt || isNaN(amt) || !dateStr) return alert("Please fill Amount and Date!");
+  
+  let entryTimestamp = editId ? CLOUD_DATA.txs.find(t=>t.id===parseInt(editId)).timestamp : new Date().toISOString();
 
+  let entry = { id: editId ? parseInt(editId) : Date.now(), _type: type, Date: dateStr, timestamp: entryTimestamp, Amount: amt, Product: document.getElementById('f_Product').value, Quantity: document.getElementById('f_Quantity').value, By: document.getElementById('f_By').value, From: document.getElementById('f_From').value, For: document.getElementById('f_For').value };
   if(type==='Transfer') { 
-    entry._accFrom = document.getElementById('accFrom').value; 
-    entry._accTo = document.getElementById('accTo').value; 
-    entry._acc = entry._accFrom;
+    entry._accFrom=document.getElementById('accFrom').value; entry._accTo=document.getElementById('accTo').value; entry._acc = entry._accFrom;
+  } else { entry._acc=document.getElementById('accSelect').value; }
+  
+  if(editId) { 
+    const idx=CLOUD_DATA.txs.findIndex(t=>t.id===parseInt(editId)); 
+    CLOUD_DATA.txs[idx]=entry; 
+    cancelEdit(); 
   } else { 
-    entry._acc = document.getElementById('accSelect').value; 
+    CLOUD_DATA.txs.unshift(entry); 
+    ['f_Amount', 'f_Product', 'f_Quantity', 'f_By', 'f_From', 'f_For'].forEach(i => document.getElementById(i).value = "");
+    setDefaultDate();
   }
-
-  if(!entry.Amount || !entry.Date) return alert("Fill Amount & Date!");
-
-  CLOUD_DATA.txs.unshift(entry); 
-  await sync('txs', CLOUD_DATA.txs);
   
-  ['f_Amount', 'f_Product', 'f_Quantity', 'f_By', 'f_From', 'f_For'].forEach(id => {
-      document.getElementById(id).value = '';
-  });
-  
+  await sync('txs', CLOUD_DATA.txs); 
   refreshUI();
 }
 
 function renderHistory() {
   const search = document.getElementById('searchInp').value.toLowerCase();
   const body = document.getElementById('txBody'); body.innerHTML = '';
-  
   CLOUD_DATA.txs.forEach(t => {
-    const searchStr = `${t.Date} ${t._type} ${t._acc} ${t.Product} ${t.By} ${t.From} ${t.For}`.toLowerCase();
-    if(searchStr.includes(search)) {
-      const rowClass = t._type==='Credit'?'row-credit':(t._type==='Debit'?'row-debit':'row-transfer');
-      const accDisplay = t._type==='Transfer' ? `${t._accFrom} ➔ ${t._accTo}` : t._acc;
-      
-      body.innerHTML += `
-        <tr class="${rowClass}">
-          <td>${t.Date}</td>
-          <td><b>${t._type}</b></td>
-          <td>${accDisplay}</td>
-          <td>${t.Product || '-'}</td>
-          <td>${t.Quantity || '-'}</td>
-          <td style="font-weight:800">₹${parseFloat(t.Amount).toLocaleString()}</td>
-          <td>
-             <small><b>F:</b> ${t.From || '-'}</small> | 
-             <small><b>B:</b> ${t.By || '-'}</small> | 
-             <small><b>4:</b> ${t.For || '-'}</small>
-          </td>
-          <td><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></td>
-        </tr>`;
+    if(JSON.stringify(t).toLowerCase().includes(search)) {
+      let displayTime = "-";
+      if(t.timestamp) {
+        const dateObj = new Date(t.timestamp);
+        // UPDATED: STRICT INDIAN STANDARD TIME & 12 HOUR FORMAT
+        displayTime = dateObj.toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit',
+          hour12: true
+        }).toUpperCase();
+      } else { displayTime = t.Date; }
+
+      let rowColorClass = "";
+      if(t._type === 'Credit') rowColorClass = "bg-credit";
+      else if(t._type === 'Debit') rowColorClass = "bg-debit";
+      else if(t._type === 'Transfer') rowColorClass = "bg-transfer";
+
+      body.innerHTML += `<tr class="${rowColorClass}">
+        <td>${displayTime}</td>
+        <td><b style="color:${t._type==='Credit'?'var(--success)':(t._type==='Debit'?'var(--danger)':'var(--warning)')}">${t._type}</b></td>
+        <td>${t._type==='Transfer'?t._accFrom+' → '+t._accTo:t._acc}</td>
+        <td>${t.Product||'-'}</td>
+        <td>${t.Quantity||'-'}</td>
+        <td style="font-weight:800">₹${parseFloat(t.Amount).toLocaleString()}</td>
+        <td><small>${t.From||''}</small></td>
+        <td><div class="action-btns"><button class="btn-edit-sm" onclick="editTx(${t.id})">✎</button><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></div></td>
+      </tr>`;
     }
   });
 }
 
-function refreshUI() {
-  const accOpts = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
-  document.getElementById('accList').innerHTML = CLOUD_DATA.accounts.map((a,i)=>`<div class="config-item">${a}<button class="btn-del-sm" onclick="deleteItem('accounts',${i})">×</button></div>`).join('');
-  
-  document.getElementById('accSelect').innerHTML = accOpts; 
-  document.getElementById('accFrom').innerHTML = accOpts; 
-  document.getElementById('accTo').innerHTML = accOpts;
-  
-  updateSuggestions(); // Update dropdown with latest product names
-  renderWallets(); 
-  renderHistory();
+function editTx(id) {
+  const tx = CLOUD_DATA.txs.find(t => t.id === id); if(!tx) return;
+  document.getElementById('editId').value = tx.id; document.getElementById('f_Date').value = tx.Date;
+  document.getElementById('f_Amount').value = tx.Amount; document.getElementById('f_Product').value = tx.Product;
+  document.getElementById('f_Quantity').value = tx.Quantity; document.getElementById('f_By').value = tx.By;
+  document.getElementById('f_From').value = tx.From; document.getElementById('f_For').value = tx.For;
+  document.getElementById('txType').value = tx._type; toggleForm();
+  if(tx._type === 'Transfer'){
+    document.getElementById('accFrom').value = tx._accFrom; document.getElementById('accTo').value = tx._accTo;
+  } else { document.getElementById('accSelect').value = tx._acc; }
+  document.getElementById('formTitle').innerText = "✏️ Edit Record"; document.getElementById('btnSubmit').innerText = "Update Record";
+  document.getElementById('btnCancel').style.display = "block"; window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function addItem(k, i) { const v=document.getElementById(i).value; if(!v)return; CLOUD_DATA[k].push(v); await sync(k, CLOUD_DATA[k]); document.getElementById(i).value=''; refreshUI(); }
-async function deleteItem(k, idx) { if(confirm("Delete Wallet?")) { CLOUD_DATA[k].splice(idx,1); await sync(k, CLOUD_DATA[k]); refreshUI(); } }
-async function deleteTx(id) { if(confirm("Delete Record?")) { CLOUD_DATA.txs=CLOUD_DATA.txs.filter(t=>t.id!==id); await sync('txs',CLOUD_DATA.txs); refreshUI(); } }
+function cancelEdit() {
+  document.getElementById('editId').value = ""; document.getElementById('formTitle').innerText = "New Entry";
+  document.getElementById('btnSubmit').innerText = "Save Transaction"; document.getElementById('btnCancel').style.display = "none";
+  ['f_Amount', 'f_Product', 'f_Quantity', 'f_By', 'f_From', 'f_For'].forEach(i => document.getElementById(i).value = ""); setDefaultDate();
+}
 
-function updateCharts(m,c,d) {
+function refreshUI() {
+  const accOpts = CLOUD_DATA.accounts.map(a=>`<option value="${a}">${a}</option>`).join('');
+  document.getElementById('accList').innerHTML = CLOUD_DATA.accounts.map((a,i)=>`<div class="config-item"><span>${a}</span><div class="action-btns"><button class="btn-edit-sm" onclick="editWallet(${i})">✎</button><button class="btn-del-sm" onclick="deleteItem('accounts',${i})">×</button></div></div>`).join('');
+  document.getElementById('accSelect').innerHTML = accOpts; document.getElementById('accFrom').innerHTML = accOpts; document.getElementById('accTo').innerHTML = accOpts;
+  const datalist = document.getElementById('productSuggestions');
+  const uniqueProducts = [...new Set(CLOUD_DATA.txs.map(t => t.Product).filter(p => p))];
+  datalist.innerHTML = uniqueProducts.map(p => `<option value="${p}">`).join('');
+  renderWallets(); renderHistory();
+}
+
+async function editWallet(idx) {
+  const oldN = CLOUD_DATA.accounts[idx]; const newN = prompt("New name?", oldN);
+  if(newN && newN!==oldN) { CLOUD_DATA.accounts[idx] = newN; CLOUD_DATA.txs.forEach(t => { if(t._acc===oldN) t._acc=newN; if(t._accFrom===oldN) t._accFrom=newN; if(t._accTo===oldN) t._accTo=newN; }); await sync('accounts', CLOUD_DATA.accounts); await sync('txs', CLOUD_DATA.txs); refreshUI(); }
+}
+
+function toggleForm() { const type = document.getElementById('txType').value; document.getElementById('normalAcc').style.display = type==='Transfer'?'none':'block'; document.getElementById('transferAcc').style.display = type==='Transfer'?'block':'none'; }
+async function addItem(k, i) { const v=document.getElementById(i).value; if(!v)return; CLOUD_DATA[k].push(v); await sync(k, CLOUD_DATA[k]); document.getElementById(i).value=''; refreshUI(); }
+async function deleteItem(k, idx) { if(confirm("Delete?")) { CLOUD_DATA[k].splice(idx,1); await sync(k, CLOUD_DATA[k]); refreshUI(); } }
+async function deleteTx(id) { if(confirm("Delete?")) { CLOUD_DATA.txs=CLOUD_DATA.txs.filter(t=>t.id!==id); await sync('txs',CLOUD_DATA.txs); refreshUI(); } }
+
+function updateCharts(m) {
   const l=Object.keys(m).sort();
+  if(l.length === 0) return;
   if(charts.bar)charts.bar.destroy(); 
-  charts.bar=new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:l,datasets:[{label:'In',data:l.map(x=>m[x].c),backgroundColor:'#10b981'},{label:'Out',data:l.map(x=>m[x].d),backgroundColor:'#ef4444'}]},options:{maintainAspectRatio:false}});
-  
+  charts.bar=new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:l,datasets:[{label:'In',data:l.map(x=>m[x].c),backgroundColor:'#10b981'},{label:'Out',data:l.map(x=>m[x].d),backgroundColor:'#ef4444'}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});
   if(charts.pie)charts.pie.destroy(); 
-  charts.pie=new Chart(document.getElementById('pieChart'),{type:'doughnut',data:{labels:['In','Out'],datasets:[{data:[c,d],backgroundColor:['#10b981','#ef4444']}]},options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}});
-  
+  charts.pie=new Chart(document.getElementById('pieChart'),{type:'doughnut',data:{labels:['In','Out'],datasets:[{data:[l.reduce((s,x)=>s+m[x].c,0),l.reduce((s,x)=>s+m[x].d,0)],backgroundColor:['#10b981','#ef4444']}]},options:{maintainAspectRatio:false}});
   if(charts.growth)charts.growth.destroy(); 
-  charts.growth=new Chart(document.getElementById('growthChart'),{type:'line',data:{labels:l,datasets:[{label:'Savings',data:l.map(x=>m[x].c-m[x].d),borderColor:'#2563eb',tension:0.3, fill:true, backgroundColor:'rgba(37,99,235,0.1)'}]},options:{maintainAspectRatio:false}});
+  charts.growth=new Chart(document.getElementById('growthChart'),{type:'line',data:{labels:l,datasets:[{label:'Savings',data:l.map(x=>m[x].c-m[x].d),borderColor:'#2563eb',tension:0.3,fill:true,backgroundColor:'rgba(37,99,235,0.05)'}]},options:{maintainAspectRatio:false}});
 }
 
 init();
