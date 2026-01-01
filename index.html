@@ -100,10 +100,8 @@
               <th>Type</th>
               <th>Wallet</th>
               <th>Product</th>
-              <th>Qty</th>
-              <th>Amount</th>
-              <th>Info</th>
-              <th>Action</th>
+              <th>By / For</th> <th>Amount</th>
+              <th>From</th> <th>Action</th>
             </tr>
           </thead>
           <tbody id="txBody"></tbody>
@@ -254,9 +252,7 @@ async function saveTransaction() {
     CLOUD_DATA.txs.unshift(entry); 
   }
   
-  // RESET FIELDS AFTER SAVING
   cancelEdit(); 
-  
   await sync('txs', CLOUD_DATA.txs); 
   refreshUI();
 }
@@ -268,15 +264,17 @@ function renderHistory() {
     if(JSON.stringify(t).toLowerCase().includes(search)) {
       let displayTime = t.clean_ts || t.Date || "-";
       let cls = t._type === 'Credit' ? "bg-credit" : (t._type === 'Debit' ? "bg-debit" : "bg-transfer");
+      
+      // Data format for By/For
+      let byForStr = `${t.By || '-'} / ${t.For || '-'}`;
+
       body.innerHTML += `<tr class="${cls}">
         <td style="font-weight:600">${displayTime}</td>
         <td><b style="color:${t._type==='Credit'?'#10b981':(t._type==='Debit'?'#ef4444':'#f59e0b')}">${t._type}</b></td>
         <td>${t._type==='Transfer'?t._accFrom+' → '+t._accTo:t._acc}</td>
         <td>${t.Product||'-'}</td>
-        <td>${t.Quantity||'-'}</td>
-        <td style="font-weight:800">₹${parseFloat(t.Amount).toLocaleString()}</td>
-        <td><small>${t.From||''}</small></td>
-        <td><div class="action-btns"><button class="btn-edit-sm" onclick="editTx(${t.id})">✎</button><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></div></td>
+        <td>${byForStr}</td> <td style="font-weight:800">₹${parseFloat(t.Amount).toLocaleString()}</td>
+        <td><small>${t.From||'-'}</small></td> <td><div class="action-btns"><button class="btn-edit-sm" onclick="editTx(${t.id})">✎</button><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></div></td>
       </tr>`;
     }
   });
