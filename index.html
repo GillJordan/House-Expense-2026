@@ -65,15 +65,12 @@
   <aside>
     <div class="card">
       <h2 style="color:var(--primary); margin:0 0 20px 0; font-size: 20px;">⚙️ Settings</h2>
-      
       <div class="config-section">
         <p onclick="togglePinView()" style="cursor:pointer; user-select:none;">Your Wallets</p>
-        
         <div id="pinArea" style="display:none; margin-bottom:15px; border-bottom:1px dashed #e2e8f0; padding-bottom:10px;">
           <input type="password" id="newPin" placeholder="New 4-Digit PIN" maxlength="4" style="margin-bottom:8px;">
           <button class="btn" style="background:var(--primary); color:white; font-size:12px; padding:6px" onclick="updatePin()">Set New PIN</button>
         </div>
-
         <div id="accList"></div>
         <input id="newAccName" placeholder="Bank or Wallet Name">
         <button class="btn" style="background:var(--primary); color:white" onclick="addItem('accounts', 'newAccName')">+ New Wallet</button>
@@ -133,7 +130,16 @@
         <table>
           <thead>
             <tr>
-              <th>Date & Time</th><th>Type</th><th>Wallet</th><th>Product</th><th>By / For</th> <th>Amount</th><th>From</th> <th>Action</th>
+              <th>Date & Time</th>
+              <th>Type</th>
+              <th>Wallet</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>By</th>
+              <th>For</th>
+              <th>Amount</th>
+              <th>From</th> 
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="txBody"></tbody>
@@ -148,12 +154,22 @@
       <input type="hidden" id="editId">
       <label>DATE</label> <input type="date" id="f_Date">
       <label>AMOUNT</label> <input type="number" id="f_Amount" placeholder="0.00">
-      <label>PRODUCT</label> <input type="text" id="f_Product" list="productSuggestions" placeholder="What?">
-      <datalist id="productSuggestions"></datalist>
-      <label>QUANTITY</label> <input type="text" id="f_Quantity" placeholder="Quantity">
-      <label>BY</label> <input type="text" id="f_By">
-      <label>From</label> <input type="text" id="f_From">
-      <label>For</label> <input type="text" id="f_For">
+      
+      <label>PRODUCT</label> <input type="text" id="f_Product" list="list_Product" placeholder="What?">
+      <datalist id="list_Product"></datalist>
+      
+      <label>QUANTITY</label> <input type="text" id="f_Quantity" list="list_Quantity" placeholder="Quantity">
+      <datalist id="list_Quantity"></datalist>
+      
+      <label>BY</label> <input type="text" id="f_By" list="list_By">
+      <datalist id="list_By"></datalist>
+      
+      <label>From</label> <input type="text" id="f_From" list="list_From">
+      <datalist id="list_From"></datalist>
+      
+      <label>For</label> <input type="text" id="f_For" list="list_For">
+      <datalist id="list_For"></datalist>
+
       <hr style="border:0; border-top:1px solid #f1f5f9; margin:15px 0;">
       <label>TRANSACTION TYPE</label>
       <select id="txType" onchange="toggleForm()">
@@ -180,7 +196,6 @@ let CLOUD_DATA = { accounts:[], txs:[] };
 let charts = { bar: null, pie: null, growth: null, trend: null };
 let currentDisplayScore = 0; 
 
-// --- SECURITY LOGIC ---
 function checkPass() {
     const entered = document.getElementById('passInput').value;
     const storedPin = localStorage.getItem('dashboard_pin') || "1234";
@@ -203,7 +218,6 @@ function updatePin() {
     togglePinView();
 }
 
-// --- APP INITIALIZATION ---
 async function init() {
   try {
     const res = await fetch(API_URL);
@@ -221,12 +235,19 @@ function refreshUI() {
   document.getElementById('accSelect').innerHTML = accOpts; 
   document.getElementById('accFrom').innerHTML = accOpts; 
   document.getElementById('accTo').innerHTML = accOpts;
-  const datalist = document.getElementById('productSuggestions');
-  datalist.innerHTML = [...new Set(CLOUD_DATA.txs.map(t => t.Product).filter(p => p))].map(p => `<option value="${p}">`).join('');
+
+  const fields = ['Product', 'Quantity', 'By', 'From', 'For'];
+  fields.forEach(field => {
+    const datalist = document.getElementById(`list_${field}`);
+    if(datalist) {
+      const uniqueValues = [...new Set(CLOUD_DATA.txs.map(t => t[field]).filter(val => val))];
+      datalist.innerHTML = uniqueValues.map(val => `<option value="${val}">`).join('');
+    }
+  });
+
   renderWallets(); renderHistory();
 }
 
-// REST OF THE LOGIC (RUNWAY, CHARTS, TXS) EXACTLY AS PER YOUR ORIGINAL REQUEST
 function renderWallets() {
   const grid = document.getElementById('walletGrid'); grid.innerHTML = '';
   let bals = {}; let totalIncome = 0; let totalExpense = 0; let monthMap = {};
@@ -299,7 +320,10 @@ function renderHistory() {
         <td style="font-weight:600">${displayTime}</td>
         <td><b style="color:${t._type==='Credit'?'#10b981':(t._type==='Debit'?'#ef4444':'#f59e0b')}">${t._type}</b></td>
         <td>${t._type==='Transfer'?t._accFrom+' → '+t._accTo:t._acc}</td>
-        <td>${t.Product||'-'}</td><td>${t.By||'-'} / ${t.For||'-'}</td>
+        <td>${t.Product||'-'}</td>
+        <td>${t.Quantity||'-'}</td>
+        <td>${t.By||'-'}</td>
+        <td>${t.For||'-'}</td>
         <td style="font-weight:800">₹${parseFloat(t.Amount).toLocaleString()}</td>
         <td><small>${t.From||'-'}</small></td>
         <td><div class="action-btns"><button class="btn-edit-sm" onclick="editTx(${t.id})">✎</button><button class="btn-del-sm" onclick="deleteTx(${t.id})">×</button></div></td>
